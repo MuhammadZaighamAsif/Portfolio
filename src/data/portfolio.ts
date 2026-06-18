@@ -61,7 +61,7 @@ export const projects = [
       "A full-stack automotive marketplace and service platform connecting buyers, sellers, and service providers with real-time listings and seamless user experience.",
     tags: ["React.js", "Vite", "Node.js", "Express.js", "MongoDB"],
     github: "https://github.com/AbubakarAfzal643/AutoSphere_v2.git",
-    live: "auto-sphere-v2-az.vercel.app",
+    live: "https://auto-sphere-v2-az.vercel.app",
     featured: true,
     highlights: [
       "Built responsive React + Vite frontend for fast user experience",
