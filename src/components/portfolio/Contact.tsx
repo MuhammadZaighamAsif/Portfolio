@@ -1,7 +1,9 @@
-import { useRef } from "react";
-import { Mail, Phone, MapPin, Github, Linkedin } from "lucide-react";
+import { useRef, useState } from "react";
+import { Mail, Phone, MapPin, Github, Linkedin, Send, Loader2 } from "lucide-react";
 import { useIntersection } from "@/hooks/useIntersection";
 import { meta } from "@/data/portfolio";
+import emailjs from "@emailjs/browser";
+import { toast } from "@/hooks/use-toast";
 
 const contactItems = [
   {
@@ -41,7 +43,41 @@ const socialLinks = [
 
 export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const visible = useIntersection(ref);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Replace these with your EmailJS credentials
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID";
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID";
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
+
+      if (formRef.current) {
+        await emailjs.sendForm(serviceId, templateId, formRef.current, publicKey);
+        
+        toast({
+          title: "Message sent successfully!",
+          description: "Thank you for reaching out. I'll get back to you soon.",
+        });
+        
+        formRef.current.reset();
+      }
+    } catch (error) {
+      console.error("Email send error:", error);
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or contact me directly via email.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="contact" className="section-container">
@@ -82,6 +118,86 @@ export default function Contact() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Contact Form */}
+          <div className="glass-card p-8 mb-8">
+            <h3 className="text-xl font-semibold text-foreground-default mb-6 text-center">
+              Send Me a Message
+            </h3>
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="user_name" className="block text-sm font-medium text-foreground-default mb-2">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    id="user_name"
+                    name="user_name"
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default text-foreground-default placeholder-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="user_email" className="block text-sm font-medium text-foreground-default mb-2">
+                    Your Email
+                  </label>
+                  <input
+                    type="email"
+                    id="user_email"
+                    name="user_email"
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default text-foreground-default placeholder-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-foreground-default mb-2">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default text-foreground-default placeholder-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                  placeholder="Project Inquiry"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-foreground-default mb-2">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={5}
+                  className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default text-foreground-default placeholder-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all resize-none"
+                  placeholder="Tell me about your project or opportunity..."
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Send Message
+                  </>
+                )}
+              </button>
+            </form>
           </div>
 
           {/* Social profiles */}

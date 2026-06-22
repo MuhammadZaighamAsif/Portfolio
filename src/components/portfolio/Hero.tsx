@@ -39,7 +39,7 @@ export default function Hero() {
 
         {/* Subtitle */}
         <p
-          className="text-base md:text-lg text-foreground-subtle max-w-2xl mx-auto leading-relaxed mb-8 animate-fade-up"
+          className="text-base md:text-lg text-foreground-subtle max-w-2xl mx-auto leading-relaxed mb-8 animate-fade-up text-justify"
           style={{ animationDelay: "360ms" }}
         >
           {meta.subtitle}
@@ -83,7 +83,7 @@ export default function Hero() {
 
         {/* Social links */}
         <div
-          className="flex items-center justify-center gap-4 animate-fade-up"
+          className="flex items-center justify-center gap-4 animate-fade-up mb-16"
           style={{ animationDelay: "600ms" }}
         >
           <a
@@ -107,7 +107,7 @@ export default function Hero() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-slow">
+        <div className="flex justify-center animate-bounce-slow">
           <button
             onClick={() => scrollTo("skills")}
             className="flex flex-col items-center gap-1 text-foreground-subtle hover:text-accent-color transition-colors"
