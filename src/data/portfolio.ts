@@ -13,7 +13,7 @@ export const meta = {
 export const skills = [
   {
     category: "Programming Languages",
-    items: ["C", "C", "Java", "JavaScript", "Python", "x86 Assembly"],
+    items: ["C", "C++", "C#", "Java", "JavaScript", "Python", "x86 Assembly"],
   },
   {
     category: "Backend",
