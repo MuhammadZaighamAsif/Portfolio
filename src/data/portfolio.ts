@@ -2,7 +2,7 @@ export const meta = {
   name: "Muhammad Zaigham Asif",
   title: "Software Engineer",
   subtitle:
-    "Software Engineering student at FAST-NUCES with hands-on experience in full-stack development and AI-based applications. Skilled in building scalable systems including NLP-powered chatbots and intelligent resume matching platforms. Passionate about developing real-world solutions using modern technologies like Python, React, and machine learning.",
+    "I help businesses and startups build modern websites, web applications, and AI-powered solutions. Whether it's a responsive React website, a custom MERN application, or an intelligent AI assistant, I focus on delivering solutions that are fast, scalable, and easy to use. My technical expertise includes React, Node.js, Express, MongoDB, Python, and AI technologies such as Natural Language Processing. I am passionate about transforming ideas into digital products that create real value for users and organizations.",
   email: "zaighamasif06@gmail.com",
   phone: "+92 317 4104187",
   location: "Lahore, Pakistan",
