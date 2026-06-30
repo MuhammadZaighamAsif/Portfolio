@@ -43,7 +43,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         {/* Loading text */}
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gradient mb-2">
-            Muhammad Zaigham
+            Muhammad Zaigham Asif
           </h2>
           <p className="text-sm text-foreground-subtle">
             Please wait a moment...
