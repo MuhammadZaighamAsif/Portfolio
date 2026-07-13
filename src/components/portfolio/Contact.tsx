@@ -86,7 +86,7 @@ export default function Contact() {
         
         toast({
           title: "Message sent successfully!",
-          description: "Thank you for reaching out. I'll get back to you soon.",
+          description: "Thank you for reaching out. I'll get back to you soon InshaAllah.",
         });
         
         formRef.current.reset();
