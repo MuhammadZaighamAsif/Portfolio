@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 
 const NotFound = () => {
   const location = useLocation();
-  // const { t } = useTranslation();
 
   useEffect(() => {
     console.error(

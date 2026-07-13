@@ -11,7 +11,7 @@ import Footer from "@/components/portfolio/Footer";
 
 const Index = () => {
   const { theme, toggle } = useTheme();
-
+//function
   return (
     <div style={{ backgroundColor: "var(--color-surface)", minHeight: "100vh" }}>
       <Navbar theme={theme} onToggle={toggle} />
