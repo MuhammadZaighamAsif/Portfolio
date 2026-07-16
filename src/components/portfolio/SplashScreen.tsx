@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Code2 } from "lucide-react";
-//splash screen props
+
 interface SplashScreenProps {
   onComplete: () => void;
 }
