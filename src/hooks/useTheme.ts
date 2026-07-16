@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+//theme toggler
 type Theme = "dark" | "light";
 
 export function useTheme() {
