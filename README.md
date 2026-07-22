@@ -23,7 +23,6 @@ This project uses:
 - Vite
 - TypeScript
 - React
-- shadcn-ui
 - Tailwind CSS
-
+- 
 ---
