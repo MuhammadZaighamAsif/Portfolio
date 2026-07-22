@@ -5,18 +5,8 @@
 A modern, responsive, and high-performance portfolio website built to showcase my projects, technical skills, certifications, and professional journey.
 
 <p align="center">
-<a href="https://muhammadzaighamasif.vercel.app/"><strong>🌍 Live Demo</strong></a> •
-<a href="#-features"><strong>Features</strong></a> •
-<a href="#-tech-stack"><strong>Tech Stack</strong></a> •
-<a href="#-installation"><strong>Installation</strong></a> •
-<a href="#-contact"><strong>Contact</strong></a>
+<a href="https://muhammadzaighamasif.vercel.app/"><strong>Live Demo</strong></a> •
 </p>
-
-![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/YOUR_REPOSITORY?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/YOUR_REPOSITORY?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/YOUR_USERNAME/YOUR_REPOSITORY?style=for-the-badge)
-![GitHub license](https://img.shields.io/github/license/YOUR_USERNAME/YOUR_REPOSITORY?style=for-the-badge)
-
 </div>
 
 ---
@@ -49,7 +39,7 @@ This portfolio highlights my software engineering journey, featured projects, te
 - 🎓 Education & Certifications
 - 💼 Experience Timeline
 - 📬 Contact Section
-- 🌙 Dark Mode Support (if available)
+- 🌙 Dark Mode Support 
 - 🚀 SEO Friendly
 
 ---
@@ -82,31 +72,6 @@ This portfolio highlights my software engineering journey, featured projects, te
 - Vercel
 
 ---
-
-# 📂 Project Structure
-
-```text
-portfolio/
-│
-├── public/
-│   └── preview.png
-│
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── data/
-│   ├── hooks/
-│   ├── layouts/
-│   ├── pages/
-│   ├── styles/
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── package.json
-├── vite.config.ts
-└── README.md
-```
-
 ---
 
 # 🚀 Installation
@@ -114,13 +79,13 @@ portfolio/
 ## Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/MuhammadZaighamAsif/Portfolio.git
 ```
 
 ## Navigate to the project
 
 ```bash
-cd YOUR_REPOSITORY
+cd Portfolio
 ```
 
 ## Install dependencies
@@ -211,8 +176,7 @@ https://linkedin.com/in/zaigham-asif-5a5499240
 https://github.com/MuhammadZaighamAsif
 
 🌐 Portfolio:
-https://YOUR_PORTFOLIO_URL
-
+https://muhammadzaighamasif.vercel.app/
 ---
 
 # ⭐ Support
