@@ -21,8 +21,6 @@ This portfolio highlights my software engineering journey, featured projects, te
 
 # 📸 Preview
 
-> Replace the image below with your portfolio screenshot.
-
 <p align="center">
 <img src="./public/preview.png" alt="Portfolio Preview" width="100%">
 </p>
@@ -182,12 +180,6 @@ https://muhammadzaighamasif.vercel.app/
 # ⭐ Support
 
 If you found this project useful, please consider giving it a ⭐ on GitHub. Your support is greatly appreciated!
-
----
-
-# 📄 License
-
-This project is licensed under the MIT License.
 
 ---
 
