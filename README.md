@@ -24,5 +24,5 @@ This project uses:
 - TypeScript
 - React
 - Tailwind CSS
-- 
+
 ---
