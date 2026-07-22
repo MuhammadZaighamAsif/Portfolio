@@ -5,7 +5,7 @@
 A modern, responsive, and high-performance portfolio website built to showcase my projects, technical skills, certifications, and professional journey.
 
 <p align="center">
-<a href="https://muhammadzaighamasif.vercel.app/"><strong>Live Demo</strong></a> •
+<a href="https://muhammadzaighamasif.vercel.app/"><strong>Live Demo</strong></a>
 </p>
 </div>
 
@@ -22,7 +22,9 @@ This portfolio highlights my software engineering journey, featured projects, te
 # 📸 Preview
 
 <p align="center">
-<img src="./public/preview.png" alt="Portfolio Preview" width="100%">
+  <a href="https://muhammadzaighamasif.vercel.app/">
+    <img src="./public/preview.png" alt="Portfolio Preview" width="100%">
+  </a>
 </p>
 
 ---
