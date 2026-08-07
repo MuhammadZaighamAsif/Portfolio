@@ -1,6 +1,6 @@
 import { Github, Linkedin, Mail, MapPin, ArrowDown, Download } from "lucide-react";
 import { meta } from "@/data/portfolio";
-
+import { showAchievement } from "@/lib/achievement";
 export default function Hero() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -72,6 +72,7 @@ export default function Hero() {
             href="/resume.pdf" 
             download="Zaigham_Resume.pdf"
             className="btn-primary inline-flex items-center gap-2"
+            onClick={() => showAchievement("Resume Obtained", "You got the loot!")}
           >
             <Download size={18} />
             Download Resume

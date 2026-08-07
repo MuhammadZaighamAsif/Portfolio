@@ -4,6 +4,7 @@ import { useIntersection } from "@/hooks/useIntersection";
 import { meta } from "@/data/portfolio";
 import emailjs from "@emailjs/browser";
 import { toast } from "@/hooks/use-toast";
+import { showAchievement } from "@/lib/achievement";
 
 const contactItems = [
   {
@@ -89,6 +90,8 @@ export default function Contact() {
           description: "Thank you for reaching out. I'll get back to you soon InshaAllah.",
         });
         
+        showAchievement("Message Sent", "Thanks for reaching out!");
+
         formRef.current.reset();
       }
     } catch (error: any) {

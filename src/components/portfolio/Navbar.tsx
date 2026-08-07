@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Sun, Moon, Code2 } from "lucide-react";
+import { Menu, X, Sun, Moon, Code2, Box } from "lucide-react";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 
 const NAV_LINKS = [
@@ -12,7 +12,7 @@ const NAV_LINKS = [
 ];
 
 interface NavbarProps {
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "minecraft";
   onToggle: () => void;
 }
 
@@ -34,6 +34,12 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
     }
     setMobileOpen(false);
   };
+
+  const nextTheme =
+    theme === "light" ? "dark" : theme === "dark" ? "minecraft" : "light";
+
+  const themeLabel =
+    theme === "light" ? "light" : theme === "dark" ? "dark" : "minecraft";
 
   return (
     <>
@@ -73,12 +79,22 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={onToggle}
-              aria-label="Toggle color theme"
+              aria-label={`Theme: ${themeLabel}. Switch to ${nextTheme} mode`}
               className="theme-toggle"
             >
-              <span className={`theme-thumb ${theme === "dark" ? "translate-x-6" : "translate-x-1"}`}>
+              <span
+                className={`theme-thumb ${
+                  theme === "light"
+                    ? "translate-x-1"
+                    : theme === "dark"
+                      ? "translate-x-[29px]"
+                      : "translate-x-[54px]"
+                }`}
+              >
                 {theme === "dark" ? (
                   <Moon size={11} className="text-white" />
+                ) : theme === "minecraft" ? (
+                  <Box size={11} className="text-white" />
                 ) : (
                   <Sun size={11} className="text-white" />
                 )}

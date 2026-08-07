@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,6 +133,60 @@
   --sidebar-ring: 252 100% 65%;
 }
 
+/* ── MINECRAFT THEME ── */
+[data-theme="minecraft"] {
+  --color-surface:          #2f2a24;
+  --color-surface-raised:   #4a443b;
+  --color-surface-overlay:  rgba(58, 52, 44, 0.96);
+
+  --color-text-default:     #f4f1e3;
+  --color-text-subtle:      #c7bea8;
+  --color-text-accent:      #ffd166;
+  --color-text-primary:     #e3b341;
+
+  --color-outline-default:  rgba(24, 21, 18, 0.75);
+  --color-outline-focus:    #ffd166;
+
+  --glass-blur:             none;
+  --glass-border:           rgba(0, 0, 0, 0.72);
+  --glass-shadow:           0 6px 0 rgba(0, 0, 0, 0.35);
+
+  --glow-primary:           0 0 0 rgba(0, 0, 0, 0);
+  --glow-accent:            0 0 0 rgba(0, 0, 0, 0);
+
+  --gradient-primary:       linear-gradient(135deg, #6bae44, #8b5a2b);
+  --gradient-text:          linear-gradient(135deg, #ffd966, #c99a2e);
+
+  /* shadcn compat tokens */
+  --background: 30 14% 17%;
+  --foreground: 47 47% 92%;
+  --card: 30 12% 24%;
+  --card-foreground: 47 47% 92%;
+  --popover: 30 12% 24%;
+  --popover-foreground: 47 47% 92%;
+  --primary: 44 78% 58%;
+  --primary-foreground: 30 14% 17%;
+  --secondary: 33 16% 30%;
+  --secondary-foreground: 47 47% 92%;
+  --muted: 33 16% 30%;
+  --muted-foreground: 37 28% 72%;
+  --accent: 102 44% 47%;
+  --accent-foreground: 47 47% 92%;
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 8% 12%;
+  --input: 30 8% 12%;
+  --ring: 44 78% 58%;
+  --sidebar-background: 30 14% 19%;
+  --sidebar-foreground: 47 47% 92%;
+  --sidebar-primary: 44 78% 58%;
+  --sidebar-primary-foreground: 30 14% 17%;
+  --sidebar-accent: 33 16% 30%;
+  --sidebar-accent-foreground: 47 47% 92%;
+  --sidebar-border: 30 8% 12%;
+  --sidebar-ring: 44 78% 58%;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -146,6 +201,12 @@
     color: var(--color-text-default);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  [data-theme="minecraft"] body {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    line-height: 1.7;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -264,6 +325,8 @@ html, body, #root {
     transform: translateY(-4px);
     box-shadow: var(--glass-shadow), var(--glow-primary);
     border-color: rgba(92, 78, 255, 0.35);
+    outline: 2px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 3px;
   }
 
   /* Nav glass */
@@ -291,7 +354,7 @@ html, body, #root {
 
   /* Theme toggle */
   .theme-toggle {
-    width: 52px; height: 28px;
+    width: 80px; height: 28px;
     border-radius: 9999px;
     border: 1px solid var(--color-outline-default);
     background: var(--color-surface-raised);
@@ -344,6 +407,8 @@ html, body, #root {
   .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: var(--glow-primary), var(--glow-accent);
+    outline: 2px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 3px;
   }
   .btn-primary:active {
     transform: scale(0.97);
@@ -513,6 +578,8 @@ html, body, #root {
     transform: translateY(-6px);
     box-shadow: var(--glass-shadow), var(--glow-primary);
     border-color: rgba(92, 78, 255, 0.35);
+    outline: 2px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 3px;
   }
   .project-card-strip {
     height: 4px;
@@ -636,4 +703,155 @@ html, body, #root {
   .animate-bounce-slow {
     animation: bounce-slow 2s ease-in-out infinite;
   }
+}
+
+[data-theme="minecraft"] .glass-card,
+[data-theme="minecraft"] .project-card,
+[data-theme="minecraft"] .hero-badge,
+[data-theme="minecraft"] .social-profile-card,
+[data-theme="minecraft"] .social-icon-btn,
+[data-theme="minecraft"] .btn-primary,
+[data-theme="minecraft"] .btn-ghost,
+[data-theme="minecraft"] .theme-toggle,
+[data-theme="minecraft"] .nav-link,
+[data-theme="minecraft"] .featured-badge,
+[data-theme="minecraft"] .skill-badge,
+[data-theme="minecraft"] .tech-tag,
+[data-theme="minecraft"] .date-chip,
+[data-theme="minecraft"] .type-badge {
+  border-radius: 4px;
+}
+
+[data-theme="minecraft"] .nav-glass,
+[data-theme="minecraft"] .glass-card,
+[data-theme="minecraft"] .project-card,
+[data-theme="minecraft"] .hero-badge {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+
+/* ── Minecraft accents ── */
+
+.mc-font {
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0.5px;
+}
+
+.mc-block {
+  width: 72px;
+  height: 72px;
+  position: relative;
+  background: #8B5A2B;
+  border: 4px solid #000;
+  image-rendering: pixelated;
+  box-shadow: inset -4px -4px 0 rgba(0,0,0,0.25), inset 4px 4px 0 rgba(255,255,255,0.1);
+}
+
+.mc-block-grass {
+  position: absolute;
+  top: -4px; left: -4px; right: -4px;
+  height: 26px;
+  background: #6BAE44;
+  border: 4px solid #000;
+  border-bottom: none;
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 60%,
+    90% 75%, 80% 55%, 70% 80%, 60% 60%,
+    50% 85%, 40% 60%, 30% 80%, 20% 55%,
+    10% 75%, 0% 60%
+  );
+}
+
+.mc-progress-track {
+  width: 260px;
+  height: 20px;
+  background: #1c1c1c;
+  border: 3px solid #000;
+  padding: 3px;
+  box-shadow: inset 0 0 0 2px #555;
+}
+
+.mc-progress-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #6BAE44 0 8px, #5A9A38 8px 16px);
+  transition: width 0.15s steps(6);
+}
+
+.mc-achievement {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 20, 20, 0.92);
+  border: 2px solid #000;
+  box-shadow: inset 0 0 0 2px #4a4a4a;
+  padding: 10px 16px 10px 10px;
+  min-width: 280px;
+}
+
+.mc-achievement-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #FFD966, #C99A2E);
+  border: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-achievement-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #FFD966;
+  margin-bottom: 4px;
+}
+
+.mc-achievement-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #fff;
+}
+
+.mc-achievement-desc {
+  font-size: 11px;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+/* ── Minecraft cursor ── */
+[data-theme="minecraft"] body {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' shape-rendering='crispEdges'><g stroke='%23000' stroke-width='1'><rect x='14' y='4' width='4' height='22' fill='%238B5A2B' transform='rotate(45 16 16)'/><rect x='6' y='4' width='20' height='6' fill='%23AAAAAA' transform='rotate(45 16 16)'/></g></svg>") 6 6, auto;
+}
+
+/* ── Hotbar scrollbar ── */
+[data-theme="minecraft"] ::-webkit-scrollbar { width: 14px; }
+[data-theme="minecraft"] ::-webkit-scrollbar-track {
+  background: #2b2b2b;
+  border-left: 2px solid #000;
+}
+[data-theme="minecraft"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8B5A2B, #6BAE44 50%, #8B5A2B);
+  border: 2px solid #000;
+  box-shadow: inset -2px -2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.15);
+}
+[data-theme="minecraft"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a06b34, #7cc44f 50%, #a06b34);
+}
+html[data-theme="minecraft"] {
+  scrollbar-color: #8B5A2B #2b2b2b;
+  scrollbar-width: thin;
+}
+
+/* ── Inventory slot (project cards) ── */
+.mc-slot {
+  width: 40px;
+  height: 40px;
+  background: #8b8b8b;
+  border: 2px solid #000;
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35), inset -2px -2px 0 rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }

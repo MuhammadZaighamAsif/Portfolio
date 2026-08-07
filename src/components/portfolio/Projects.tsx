@@ -34,16 +34,20 @@ export default function Projects() {
               <div className="project-card-strip" />
 
               <div className="p-6">
-                {/* Featured badge */}
-                {project.featured && (
-                  <span className="featured-badge mb-3 inline-block">Featured</span>
-                )}
-
-                {/* Title */}
-                <h3 className="text-lg font-semibold text-foreground-default mb-2 group-hover:text-primary-color transition-colors">
-                  {project.title}
-                </h3>
-
+                {/* Inventory slot + title */}
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="mc-slot">
+                    <Github size={18} className="text-foreground-default" />
+                  </div>
+                  <div>
+                    {project.featured && (
+                      <span className="featured-badge mb-1 inline-block">Featured</span>
+                    )}
+                    <h3 className="text-lg font-semibold text-foreground-default group-hover:text-primary-color transition-colors">
+                      {project.title}
+                    </h3>
+                  </div>
+                </div>
                 {/* Description */}
                 <p className="text-sm text-foreground-subtle leading-relaxed mb-4">
                   {project.description}
