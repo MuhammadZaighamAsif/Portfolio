@@ -86,6 +86,14 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
                 )}
               </span>
             </button>
+            <a
+              href="/resume.pdf"
+              download="Zaigham_Resume.pdf"
+              className="hidden md:inline-flex items-center gap-2 btn-primary"
+              onClick={() => window.scrollTo({ top: 0 })}
+            >
+              Resume
+            </a>
             <button
               onClick={() => setMobileOpen((o) => !o)}
               className="md:hidden p-2 rounded-lg text-foreground-subtle hover:text-foreground-default transition-colors"

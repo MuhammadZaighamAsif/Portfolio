@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Public+Sans:wght@400;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -145,9 +146,15 @@
   body {
     background-color: var(--color-surface);
     color: var(--color-text-default);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Public Sans', 'Inter', system-ui, -apple-system, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Typographic scale for professional feel */
+  h1 { font-family: 'Inter', 'Public Sans', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+  h2 { font-family: 'Inter', 'Public Sans', system-ui, sans-serif; font-weight: 700; }
+  h3 { font-family: 'Inter', 'Public Sans', system-ui, sans-serif; font-weight: 600; }
+  p, a, li, span, button { font-family: 'Public Sans', system-ui, sans-serif; }
 
   
 

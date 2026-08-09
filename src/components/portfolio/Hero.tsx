@@ -60,7 +60,7 @@ export default function Hero() {
           </span>
         </div>
 
-        {/* CTA buttons */}
+        {/* CTA buttons (reordered for professional flow) */}
         <div
           className="flex flex-wrap items-center justify-center gap-4 mb-12 animate-fade-up"
           style={{ animationDelay: "520ms" }}
@@ -68,18 +68,18 @@ export default function Hero() {
           <button onClick={() => scrollTo("projects")} className="btn-primary">
             View My Work
           </button>
-          <a 
-            href="/resume.pdf" 
+          <button onClick={() => scrollTo("contact")} className="btn-ghost">
+            Contact Me
+          </button>
+          <a
+            href="/resume.pdf"
             download="Zaigham_Resume.pdf"
             className="btn-primary inline-flex items-center gap-2"
             onClick={() => showAchievement("Resume Obtained", "You got the loot!")}
           >
             <Download size={18} />
-            Download Resume
+            Resume
           </a>
-          <button onClick={() => scrollTo("contact")} className="btn-ghost">
-            Contact Me
-          </button>
         </div>
 
         {/* Social links */}
