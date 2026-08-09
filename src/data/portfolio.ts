@@ -171,14 +171,16 @@ export const experience = [
     ],
   },
   {
-    role: "Team Lead (Academic Project)",
-    company: "FAST NUCES",
-    type: "Academic",
-    duration: "02/2025 – 05/2025",
+    role: "Qubit (Intern)",
+    company: "Quantum Logics Pvt Ltd",
+    type: "Internship",
+    duration: "05/2026 – 08/2026",
     bullets: [
-      "Led a team of 6 to design and develop a disaster management system",
-      "Improved system efficiency and response time by 30%",
-      "Managed task distribution and coordinated development workflow",
+      "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026). Certificate: /internship-certificate.pdf",
+      "Served as Project Captain (Jul 2026 – Aug 2026): led 2–4 teams, coordinated project execution, and enforced community policies",
+      "Served as Team Captain (Jul 2026): ran regular meetings, published session recordings, and managed team deliverables",
+      "Contributed to QuantumChat and CalculusRuntime projects — implemented data analysis, simulation scripts, and AI integrations",
+      "Co-authored sections of the final research report and prepared experimental figures (see /qubit-report (1).pdf)",
     ],
   },
 ];

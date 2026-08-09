@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-type Theme = "dark" | "light" | "minecraft";
+type Theme = "dark" | "light";
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -15,10 +15,7 @@ export function useTheme() {
     localStorage.setItem("portfolio-theme", theme);
   }, [theme]);
 
-  const toggle = () =>
-    setTheme((t) =>
-      t === "light" ? "dark" : t === "dark" ? "minecraft" : "light"
-    );
+  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return { theme, toggle };
 }

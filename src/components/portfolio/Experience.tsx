@@ -1,13 +1,31 @@
-import { useRef } from "react";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Briefcase, GraduationCap, X } from "lucide-react";
 import { useIntersection } from "@/hooks/useIntersection";
 import { experience } from "@/data/portfolio";
 
 export default function Experience() {
   const ref = useRef<HTMLDivElement>(null);
   const visible = useIntersection(ref);
+  const [modalUrl, setModalUrl] = useState<string | null>(null);
+
+  const openModal = (url: string) => {
+    setModalUrl(url);
+    try { document.body.style.overflow = "hidden"; } catch {}
+  };
+
+  const closeModal = () => {
+    setModalUrl(null);
+    try { document.body.style.overflow = ""; } catch {}
+  };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeModal(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
+    <>
     <section id="experience" className="section-container">
       <div
         ref={ref}
@@ -68,6 +86,33 @@ export default function Experience() {
                       </li>
                     ))}
                   </ul>
+                  <div className="mt-4 flex items-center gap-3">
+                    {exp.company === "Developers Hub Corporation" && (
+                      <button
+                        onClick={() => openModal('/developers_hub_completion_cert.pdf')}
+                        className="btn-ghost"
+                      >
+                        View Certificate
+                      </button>
+                    )}
+
+                    {exp.company === "Quantum Logics Pvt Ltd" && (
+                      <>
+                        <button
+                          onClick={() => openModal('/internship-certificate.pdf')}
+                          className="btn-ghost"
+                        >
+                          View Certificate
+                        </button>
+                        <button
+                          onClick={() => openModal(encodeURI('/qubit-report (1).pdf'))}
+                          className="btn-ghost"
+                        >
+                          View Report
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -75,5 +120,22 @@ export default function Experience() {
         </div>
       </div>
     </section>
+
+    {modalUrl && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
+        <div className="relative z-10 w-full max-w-5xl h-[80vh] bg-card border border-border rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between p-3 border-b border-border bg-background">
+            <div className="text-sm font-semibold">Document preview</div>
+            <div className="flex items-center gap-2">
+              <a href={modalUrl} target="_blank" rel="noopener noreferrer" className="card-link">Open in new tab</a>
+              <button onClick={closeModal} className="p-2 rounded hover:bg-muted"><X size={16} /></button>
+            </div>
+          </div>
+          <iframe src={modalUrl} className="w-full h-full" title="Document preview" />
+        </div>
+      </div>
+    )}
+    </>
   );
 }
