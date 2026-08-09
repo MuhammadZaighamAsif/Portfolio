@@ -176,11 +176,11 @@ export const experience = [
     type: "Internship",
     duration: "05/2026 – 08/2026",
     bullets: [
-      "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026). Certificate: /internship-certificate.pdf",
-      "Served as Project Captain (Jul 2026 – Aug 2026): led 2–4 teams, coordinated project execution, and enforced community policies",
+      "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026). ",
+      "Served as Project Captain (Jul 2026 – Aug 2026): led 3 teams, coordinated project execution, and enforced community policies",
       "Served as Team Captain (Jul 2026): ran regular meetings, published session recordings, and managed team deliverables",
       "Contributed to QuantumChat and CalculusRuntime projects — implemented data analysis, simulation scripts, and AI integrations",
-      "Co-authored sections of the final research report and prepared experimental figures (see /qubit-report (1).pdf)",
+      
     ],
   },
 ];
