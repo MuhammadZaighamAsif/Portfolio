@@ -63,7 +63,7 @@ export const projects = [
     tags: ["Python", "Flask", "FAISS", "sentence-transformers", "NLP", "JavaScript"],
     github: "https://github.com/MuhammadZaighamAsif/ZikrAi.git",
     live: "",
-    featured: true,
+    featured: false,
     highlights: [
       "Implemented FAISS + sentence-transformers for semantic search with hybrid retrieval (TF-IDF + keyword fusion)",
       "Designed dynamic query weighting to improve answer relevance and accuracy",
@@ -79,7 +79,7 @@ export const projects = [
     tags: ["React.js", "Vite", "Node.js", "Express.js", "MongoDB"],
     github: "https://github.com/AbubakarAfzal643/AutoSphere_v2.git",
     live: "https://auto-sphere-v2-az.vercel.app",
-    featured: true,
+    featured: false,
     highlights: [
       "Built responsive React + Vite frontend for fast user experience",
       "Designed RESTful API with Node.js + Express for scalable backend",
@@ -95,7 +95,7 @@ export const projects = [
     tags: ["Python", "Flask", "NLP", "BERT"],
     github: "https://github.com/MuhammadZaighamAsif/TalentMiner.git",
     live: "",
-    featured: true,
+    featured: false,
     highlights: [
       "Implemented semantic similarity using BERT / NLP techniques",
       "Improved matching accuracy compared to keyword-based approaches",
@@ -109,7 +109,7 @@ export const projects = [
     tags: ["React.js", "Node.js", "Express.js", "MongoDB"],
     github: "https://github.com/MuhammadZaighamAsif/Disaster-Management-System.git",
     live: "",
-    featured: true,
+    featured: false,
     highlights: [
       "Led a team of 6, improving assistance response time by 30%",
       "Achieved 85% matching accuracy using optimized data handling",
