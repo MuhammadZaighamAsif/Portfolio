@@ -535,6 +535,52 @@ html, body, #root {
     background: var(--gradient-primary);
   }
 
+  .project-spotlight-shell {
+    position: relative;
+    background: linear-gradient(135deg, rgba(92, 78, 255, 0.08), rgba(0, 217, 200, 0.06));
+    box-shadow: 0 20px 60px rgba(92, 78, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .project-spotlight-glow {
+    position: absolute;
+    inset: -20% auto auto 55%;
+    width: 300px;
+    height: 300px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(92, 78, 255, 0.28), transparent 65%);
+    filter: blur(30px);
+    pointer-events: none;
+  }
+  .project-spotlight-thumb {
+    position: relative;
+    background: linear-gradient(135deg, rgba(92, 78, 255, 0.08), rgba(0, 217, 200, 0.08));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 35px rgba(3, 15, 32, 0.18);
+  }
+  .project-spotlight-thumb img {
+    display: block;
+    filter: saturate(1.1) contrast(1.06);
+  }
+  .project-spotlight-glow-secondary {
+    position: absolute;
+    inset: auto -10% -20% auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(0, 217, 200, 0.26), transparent 68%);
+    filter: blur(28px);
+    pointer-events: none;
+  }
+  .project-product-cta {
+    background: linear-gradient(135deg, #6a5cff 0%, #8b5cf6 40%, #00d9c5 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 14px 28px rgba(92, 78, 255, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .project-product-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(92, 78, 255, 0.34), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  }
+
   /* Card link */
   .card-link {
     display: inline-flex;

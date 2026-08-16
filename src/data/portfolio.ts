@@ -48,6 +48,7 @@ export const projects = [
     live: "https://agwattotravel.com/",
     featured: true,
     category: "Client Work",
+    thumbnail: "/agwatto-home.png",
     highlights: [
       "Built a production-ready MERN travel website for a real client business",
       "Designed package listings, customer-friendly UI, and conversion-focused browsing experience",
@@ -64,6 +65,7 @@ export const projects = [
     github: "https://github.com/MuhammadZaighamAsif/ZikrAi.git",
     live: "",
     featured: false,
+    category: "AI",
     highlights: [
       "Implemented FAISS + sentence-transformers for semantic search with hybrid retrieval (TF-IDF + keyword fusion)",
       "Designed dynamic query weighting to improve answer relevance and accuracy",
@@ -80,6 +82,7 @@ export const projects = [
     github: "https://github.com/AbubakarAfzal643/AutoSphere_v2.git",
     live: "https://auto-sphere-v2-az.vercel.app",
     featured: false,
+    category: "Full Stack",
     highlights: [
       "Built responsive React + Vite frontend for fast user experience",
       "Designed RESTful API with Node.js + Express for scalable backend",
@@ -96,6 +99,7 @@ export const projects = [
     github: "https://github.com/MuhammadZaighamAsif/TalentMiner.git",
     live: "",
     featured: false,
+    category: "AI",
     highlights: [
       "Implemented semantic similarity using BERT / NLP techniques",
       "Improved matching accuracy compared to keyword-based approaches",
@@ -110,6 +114,7 @@ export const projects = [
     github: "https://github.com/MuhammadZaighamAsif/Disaster-Management-System.git",
     live: "",
     featured: false,
+    category: "Full Stack",
     highlights: [
       "Led a team of 6, improving assistance response time by 30%",
       "Achieved 85% matching accuracy using optimized data handling",

@@ -26,11 +26,12 @@ const getProjectCategory = (project: (typeof projects)[number]) => {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
 
-  const highlightedProject = projects.find((project) => project.featured) ?? projects[0];
+  const highlightedProject = projects.find((project) => project.category === "Client Work") ?? projects[0];
 
   const filteredProjects = useMemo(() => {
     if (activeTab === "All") return projects;
     if (activeTab === "Featured") return projects.filter((project) => project.featured);
+    if (activeTab === "Client Work") return projects.filter((project) => project.category === "Client Work");
 
     return projects.filter((project) => getProjectCategory(project) === activeTab);
   }, [activeTab]);
@@ -53,7 +54,8 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <div className="mb-8 overflow-hidden rounded-3xl border border-border bg-surface-raised shadow-glow-primary/30">
+        <div className="project-spotlight-shell mb-8 overflow-hidden rounded-3xl border border-border bg-surface-raised">
+          <div className="project-spotlight-glow" />
           <div className="bg-gradient-primary px-6 py-4">
             <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/90">
               <Sparkles size={14} />
@@ -61,36 +63,45 @@ export default function ProjectsPage() {
             </div>
           </div>
           <div className="p-6 md:p-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
               <div>
                 <span className="featured-badge inline-block mb-3">Highlight</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-foreground-default">{highlightedProject.title}</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground-subtle">{highlightedProject.description}</p>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {highlightedProject.live && (
+                    <a
+                      href={highlightedProject.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-product-cta inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                    >
+                      Live demo
+                      <ExternalLink size={14} />
+                    </a>
+                  )}
+                  {highlightedProject.github && (
+                    <a
+                      href={highlightedProject.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-5 py-3 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
+                    >
+                      GitHub
+                      <Github size={14} />
+                    </a>
+                  )}
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                {highlightedProject.live && (
-                  <a
-                    href={highlightedProject.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    Live project
-                    <ExternalLink size={14} />
-                  </a>
-                )}
-                {highlightedProject.github && (
-                  <a
-                    href={highlightedProject.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground-default"
-                  >
-                    GitHub
-                    <Github size={14} />
-                  </a>
-                )}
+              <div className="project-spotlight-thumb relative overflow-hidden rounded-2xl border border-border bg-surface">
+                <div className="project-spotlight-glow-secondary" />
+                <img
+                  src={highlightedProject.thumbnail || "https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1200&q=80"}
+                  alt={highlightedProject.title}
+                  className="h-52 w-full object-cover md:h-64"
+                />
               </div>
             </div>
           </div>
