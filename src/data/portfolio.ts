@@ -48,6 +48,7 @@ export const projects = [
     live: "https://agwattotravel.com/",
     featured: true,
     category: "Client Work",
+    categories: ["Client Work", "Full Stack"],
     thumbnail: "/agwatto-home.png",
     highlights: [
       "Built a production-ready MERN travel website for a real client business",
@@ -100,6 +101,7 @@ export const projects = [
     live: "",
     featured: false,
     category: "AI",
+    categories: ["AI", "Full Stack"],
     highlights: [
       "Implemented semantic similarity using BERT / NLP techniques",
       "Improved matching accuracy compared to keyword-based approaches",
@@ -128,6 +130,7 @@ export const projects = [
     tags: ["MongoDB", "Express.js", "React.js", "Node.js"],
     github: "https://github.com/MuhammadZaighamAsif/Software-House-Project-Tracker.git",
     live: "",
+    category: "Full Stack",
     featured: false,
     highlights: [
       "Developed full-stack solution for project and task management",
@@ -173,6 +176,7 @@ export const projects = [
     tags: ["React.js", "Node.js", "Express.js", "PostgreSQL"],
     github: "https://github.com/RanaAbdulHannan/warehouse_management.git",
     live: "",
+    category: "Full Stack",
     featured: false,
     highlights: [
       "Improved inventory update efficiency by 40%",

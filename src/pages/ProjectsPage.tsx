@@ -7,6 +7,10 @@ const tabs = ["All", "Featured", "Full Stack", "AI", "Client Work"] as const;
 type Tab = (typeof tabs)[number];
 
 const getProjectCategory = (project: (typeof projects)[number]) => {
+  if (project.categories && project.categories.length > 0) {
+    return project.categories[0];
+  }
+
   const category = project.category;
   if (category) return category;
 
@@ -26,12 +30,13 @@ const getProjectCategory = (project: (typeof projects)[number]) => {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
 
-  const highlightedProject = projects.find((project) => project.category === "Client Work") ?? projects[0];
+  const highlightedProject = projects.find((project) => project.categories?.includes("Client Work")) ?? projects[0];
 
   const filteredProjects = useMemo(() => {
     if (activeTab === "All") return projects;
     if (activeTab === "Featured") return projects.filter((project) => project.featured);
-    if (activeTab === "Client Work") return projects.filter((project) => project.category === "Client Work");
+    if (activeTab === "Client Work") return projects.filter((project) => project.categories?.includes("Client Work"));
+    if (activeTab === "Full Stack") return projects.filter((project) => project.categories?.includes("Full Stack") || project.category === "Full Stack");
 
     return projects.filter((project) => getProjectCategory(project) === activeTab);
   }, [activeTab]);
