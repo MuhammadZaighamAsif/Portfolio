@@ -40,6 +40,23 @@ export const skills = [
 export const projects = [
   {
     id: 1,
+    title: "Agwatto Travel — Umrah Packages Website",
+    description:
+      "A real client project for a travel business offering Umrah packages, built as a full-stack MERN website and deployed on Hostinger for live customer traffic and package browsing.",
+    tags: ["React.js", "Node.js", "Express.js", "MongoDB", "MERN", "Travel"],
+    github: "",
+    live: "https://agwattotravel.com/",
+    featured: true,
+    category: "Client Work",
+    highlights: [
+      "Built a production-ready MERN travel website for a real client business",
+      "Designed package listings, customer-friendly UI, and conversion-focused browsing experience",
+      "Deployed and maintained the site live on Hostinger for public access",
+      "Worked on a business-driven product with real user flow and conversion requirements",
+    ],
+  },
+  {
+    id: 2,
     title: "Zikr AI — Islamic NLP Chatbot",
     description:
       "An AI-powered chatbot using Retrieval-Augmented Generation (RAG) to answer Islamic queries with explainable AI responses, dynamic query weighting, and a Flask-based API with interactive frontend.",
@@ -55,7 +72,7 @@ export const projects = [
     ],
   },
   {
-    id: 2,
+    id: 3,
     title: "AutoSphere — Automotive Marketplace",
     description:
       "A full-stack automotive marketplace and service platform connecting buyers, sellers, and service providers with real-time listings and seamless user experience.",
@@ -71,7 +88,7 @@ export const projects = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     title: "TalentMiner: AI Resume–Job Description Matcher",
     description:
       "An NLP-based system to match resumes with job descriptions using semantic similarity via BERT, improving matching accuracy compared to keyword-based approaches.",
@@ -85,7 +102,7 @@ export const projects = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     title: "ResQ Disaster Management System",
     description:
       "A full-stack platform connecting donors, victims, and volunteers during disasters, achieving 85% matching accuracy with optimized data handling.",
@@ -99,7 +116,7 @@ export const projects = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     title: "Software House Project Tracker",
     description:
       "A comprehensive MERN stack project management system for tracking software development projects, tasks, team members, and deadlines with real-time updates.",
@@ -114,7 +131,7 @@ export const projects = [
     ],
   },
   {
-    id: 6,
+    id: 7,
     title: "Pong Assembly Game",
     description:
       "A classic Pong game implementation written in x86 assembly language for DOS environment, featuring two-player paddle controls, ball physics, and a scoring system.",
@@ -129,7 +146,7 @@ export const projects = [
     ],
   },
   {
-    id: 7,
+    id: 8,
     title: "Energy Scheduling System",
     description:
       "A Windows Forms application for managing and optimizing energy consumption schedules, helping organizations track and reduce energy costs through smart scheduling.",
@@ -144,7 +161,7 @@ export const projects = [
     ],
   },
   {
-    id: 8,
+    id: 9,
     title: "Warehouse Management System",
     description:
       "A web-based inventory system for real-time stock and supplier management with a scalable database structure, improving inventory update efficiency by 40%.",

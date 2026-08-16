@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Github, ExternalLink, ChevronRight, ArrowRight } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Github, ExternalLink, ChevronRight, ArrowRight, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIntersection } from "@/hooks/useIntersection";
 import { projects } from "@/data/portfolio";
@@ -7,7 +7,17 @@ import { projects } from "@/data/portfolio";
 export default function Projects() {
   const ref = useRef<HTMLDivElement>(null);
   const visible = useIntersection(ref);
-  const featuredProjects = projects.slice(0, 4);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 4;
+  const totalPages = Math.ceil(projects.length / pageSize);
+
+  const visibleProjects = useMemo(() => {
+    const start = currentPage * pageSize;
+    return projects.slice(start, start + pageSize);
+  }, [currentPage]);
+
+  const goToPrev = () => setCurrentPage((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
+  const goToNext = () => setCurrentPage((prev) => (prev + 1) % totalPages);
 
   return (
     <section id="projects" className="section-container">
@@ -25,11 +35,35 @@ export default function Projects() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {featuredProjects.map((project, i) => (
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <div className="text-sm text-foreground-subtle">
+            Showing {visibleProjects.length} of {projects.length} projects
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={goToPrev}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
+              aria-label="Previous projects"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={goToNext}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
+              aria-label="Next projects"
+            >
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div key={currentPage} className="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-500 ease-out">
+          {visibleProjects.map((project, i) => (
             <div
               key={project.id}
-              className="project-card group"
+              className="project-card group animate-fade-up"
               style={{ transitionDelay: `${i * 80}ms` }}
             >
               <div className="project-card-strip" />
@@ -48,6 +82,7 @@ export default function Projects() {
                     </h3>
                   </div>
                 </div>
+
                 <p className="text-sm text-foreground-subtle leading-relaxed mb-4">
                   {project.description}
                 </p>
@@ -105,7 +140,7 @@ export default function Projects() {
             to="/projects"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-5 py-3 text-sm font-semibold text-white shadow-glow-primary transition hover:translate-y-[-2px]"
           >
-            View more
+            View all projects
             <ArrowRight size={16} />
           </Link>
         </div>
