@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Briefcase, GraduationCap, X } from "lucide-react";
+import { Briefcase, FileText, GraduationCap, ArrowUpRight, X } from "lucide-react";
 import { useIntersection } from "@/hooks/useIntersection";
 import { experience } from "@/data/portfolio";
 
@@ -42,19 +42,17 @@ export default function Experience() {
         </div>
 
         <div className="relative max-w-3xl mx-auto">
-          {/* Vertical rail */}
           <div className="timeline-rail" />
 
-          <div className="space-y-10 pl-10">
+          <div className="space-y-8 pl-10">
             {experience.map((exp, i) => (
               <div
-                key={i}
+                key={`${exp.company}-${exp.duration}`}
                 className={`relative transition-all duration-700 ${
                   visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
                 }`}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
-                {/* Dot */}
                 <div className="timeline-dot">
                   {exp.type === "Academic" ? (
                     <GraduationCap size={10} className="text-white" />
@@ -63,36 +61,48 @@ export default function Experience() {
                   )}
                 </div>
 
-                <div className="glass-card p-6">
-                  {/* Duration chip */}
-                  <span className="date-chip mb-3 inline-block">{exp.duration}</span>
-
-                  <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
-                    <h3 className="text-lg font-semibold text-foreground-default">
-                      {exp.role}
-                    </h3>
+                <div className="experience-card glass-card p-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                    <span className="date-chip">{exp.duration}</span>
                     <span className="type-badge">{exp.type}</span>
                   </div>
 
-                  <p className="text-primary-color font-semibold text-sm mb-4">
-                    {exp.company}
-                  </p>
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-foreground-default leading-tight">
+                      {exp.role}
+                    </h3>
+                    <p className="experience-company mt-2">{exp.company}</p>
+                  </div>
 
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {exp.bullets.map((b, bi) => (
-                      <li key={bi} className="flex items-start gap-2 text-sm text-foreground-subtle">
+                      <li key={bi} className="flex items-start gap-2.5 text-sm leading-6 text-foreground-subtle">
                         <span className="bullet-dot" />
-                        {b}
+                        <span>{b}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-4 flex items-center gap-3">
+
+                  <div className="mt-5 flex flex-wrap items-center gap-3">
                     {exp.company === "Developers Hub Corporation" && (
                       <button
                         onClick={() => openModal('/developers_hub_completion_cert.pdf')}
-                        className="btn-ghost"
+                        className="experience-cta"
                       >
+                        <FileText size={15} />
                         View Certificate
+                        <ArrowUpRight size={14} />
+                      </button>
+                    )}
+
+                    {exp.company === "Exper System Solution" && (
+                      <button
+                        onClick={() => openModal('/ESS offer letter.png')}
+                        className="experience-cta experience-cta-primary"
+                      >
+                        <FileText size={15} />
+                        View Offer Letter
+                        <ArrowUpRight size={14} />
                       </button>
                     )}
 
@@ -100,15 +110,19 @@ export default function Experience() {
                       <>
                         <button
                           onClick={() => openModal('/internship-certificate.pdf')}
-                          className="btn-ghost"
+                          className="experience-cta"
                         >
+                          <FileText size={15} />
                           View Certificate
+                          <ArrowUpRight size={14} />
                         </button>
                         <button
                           onClick={() => openModal(encodeURI('/qubit-report (1).pdf'))}
-                          className="btn-ghost"
+                          className="experience-cta experience-cta-secondary"
                         >
+                          <FileText size={15} />
                           View Report
+                          <ArrowUpRight size={14} />
                         </button>
                       </>
                     )}

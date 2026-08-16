@@ -1,32 +1,28 @@
-import { useRef } from "react";
-import { Github, ExternalLink, ChevronRight, ArrowRight } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useIntersection } from "@/hooks/useIntersection";
 import { projects } from "@/data/portfolio";
 
-export default function Projects() {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useIntersection(ref);
-  const featuredProjects = projects.slice(0, 4);
-
+export default function ProjectsPage() {
   return (
-    <section id="projects" className="section-container">
-      <div
-        ref={ref}
-        className={`section-inner transition-all duration-700 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="section-header">
-          <span className="section-tag">What I've built</span>
-          <h2 className="section-title">Projects</h2>
-          <p className="section-subtitle">
-            A selection of projects that demonstrate my skills in full-stack development and AI.
-          </p>
+    <div style={{ backgroundColor: "var(--color-surface)", minHeight: "100vh" }}>
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-20">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-4 py-2 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
+          >
+            <ArrowLeft size={16} />
+            Home
+          </Link>
+
+          <div className="text-right">
+            <p className="section-tag mb-1">Portfolio</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground-default">All Projects</h1>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {featuredProjects.map((project, i) => (
+          {projects.map((project, i) => (
             <div
               key={project.id}
               className="project-card group"
@@ -48,6 +44,7 @@ export default function Projects() {
                     </h3>
                   </div>
                 </div>
+
                 <p className="text-sm text-foreground-subtle leading-relaxed mb-4">
                   {project.description}
                 </p>
@@ -99,17 +96,7 @@ export default function Projects() {
             </div>
           ))}
         </div>
-
-        <div className="mt-8 flex justify-center">
-          <Link
-            to="/projects"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-5 py-3 text-sm font-semibold text-white shadow-glow-primary transition hover:translate-y-[-2px]"
-          >
-            View more
-            <ArrowRight size={16} />
-          </Link>
-        </div>
       </div>
-    </section>
+    </div>
   );
 }

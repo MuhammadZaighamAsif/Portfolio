@@ -161,13 +161,14 @@ export const projects = [
 
 export const experience = [
   {
-    role: "Front End Developer",
-    company: "Developers Hub Corporation",
+    role: "Software Engineer Intern",
+    company: "Exper System Solution",
     type: "Internship",
-    duration: "12/2025 – 01/2026",
+    duration: "08/2026 – Present",
     bullets: [
-      "Developed responsive web interfaces using React, HTML, CSS, and JavaScript",
-      "Improved page load performance by 25%",
+      "Worked as a software engineer intern contributing to product development and real-world engineering workflows.",
+      "Collaborated with the development team to build and improve software features using modern web technologies.",
+      "Gained hands-on experience in debugging, feature implementation, and team-based software delivery.",
     ],
   },
   {
@@ -177,10 +178,20 @@ export const experience = [
     duration: "05/2026 – 08/2026",
     bullets: [
       "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026). ",
-      "Served as Project Captain (Jul 2026 – Aug 2026): led 3 teams, coordinated project execution, and enforced community policies",
+      "Served as Project Captain (Jul 2026 – Aug 2026): led 3g teams, coordinated project execution, and enforced community policies",
       "Served as Team Captain (Jul 2026): ran regular meetings, published session recordings, and managed team deliverables",
       "Contributed to QuantumChat and CalculusRuntime projects — implemented data analysis, simulation scripts, and AI integrations",
       
+    ],
+  },
+  {
+    role: "Front End Developer",
+    company: "Developers Hub Corporation",
+    type: "Internship",
+    duration: "12/2025 – 01/2026",
+    bullets: [
+      "Developed responsive web interfaces using React, HTML, CSS, and JavaScript",
+      "Improved page load performance by 25%",
     ],
   },
 ];
