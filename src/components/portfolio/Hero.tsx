@@ -32,21 +32,22 @@ export default function Hero() {
         const letters = nameRef.current.querySelectorAll("span");
         
         // Falling letters animation
-        tl.from(letters, {
-          y: -100,
-          opacity: 0,
-          rotation: () => gsap.utils.random(-15, 15),
-          stagger: 0.03,
-          duration: 0.8,
-          ease: "bounce.out",
-          onStart: () => {
-            letters.forEach((letter) => {
-              if (letter.textContent?.trim()) {
-                gsap.set(letter, { opacity: 1 });
-              }
-            });
+        tl.fromTo(
+          letters,
+          {
+            y: -100,
+            opacity: 0,
+            rotation: () => gsap.utils.random(-15, 15),
           },
-        });
+          {
+            y: 0,
+            opacity: 1,
+            rotation: 0,
+            stagger: 0.03,
+            duration: 0.8,
+            ease: "bounce.out",
+          }
+        );
       }
 
       // Fade in role
