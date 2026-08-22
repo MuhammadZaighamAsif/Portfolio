@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReactBitsText from "@/components/ui/ReactBitsText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,17 +17,22 @@ export default function Projects() {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Header fade in
-      gsap.from(headerRef.current, {
+      const title = headerRef.current?.querySelector("h2");
+      const description = headerRef.current?.querySelector("p:last-child");
+
+      // Clipped editorial reveal
+      gsap.from(title, {
         scrollTrigger: {
           trigger: headerRef.current,
           start: "top 80%",
           toggleActions: "play none none reverse",
         },
-        y: 40,
+        y: 28,
+        clipPath: "inset(0 100% 0 0)",
         duration: 0.8,
         ease: "power3.out",
       });
+      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, x: -18, duration: 0.7, delay: 0.15, ease: "power2.out" });
 
       // Cards stagger
       const cards = gridRef.current?.querySelectorAll(".project-item");
@@ -59,9 +65,7 @@ export default function Projects() {
           <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
             Selected Work
           </p>
-          <h2 className="text-heading mb-6">
-            Projects
-          </h2>
+          <ReactBitsText text="Projects" variant="tracking" className="text-heading mb-6" />
           <p className="text-body-large">
             A collection of projects showcasing full-stack development, AI integration, and modern web technologies.
           </p>
@@ -140,13 +144,13 @@ export default function Projects() {
 
         {/* View All Link */}
         {projects.length > 6 && (
-          <div className="text-center">
+          <div className="projects-footer">
             <Link
               to="/projects"
               className="inline-flex items-center gap-2 hover-underline text-lg font-medium"
               style={{ color: "var(--text-primary)" }}
             >
-              View All Projects
+              <span>View all projects</span>
               <ArrowRight size={20} />
             </Link>
           </div>

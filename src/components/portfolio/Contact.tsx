@@ -1,9 +1,14 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Github, Linkedin, Send, Loader2 } from "lucide-react";
 import { meta } from "@/data/portfolio";
 import emailjs from "@emailjs/browser";
 import { toast } from "@/hooks/use-toast";
 import { showAchievement } from "@/lib/achievement";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReactBitsText from "@/components/ui/ReactBitsText";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const contactItems = [
   {
@@ -45,6 +50,32 @@ export default function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const heading = ref.current?.querySelector("h2");
+      const description = ref.current?.querySelector(".text-body-large");
+
+      // Soft rise for the closing invitation
+      gsap.from(heading, {
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+        y: 20,
+        duration: 0.75,
+        ease: "power2.out",
+      });
+      gsap.from(description, {
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+        y: 12,
+        duration: 0.65,
+        delay: 0.12,
+        ease: "power2.out",
+      });
+    }, ref);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -139,9 +170,7 @@ export default function Contact() {
           <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
             Get in touch
           </p>
-          <h2 className="text-heading mb-6">
-            Contact
-          </h2>
+          <ReactBitsText text="Contact" variant="slide" className="text-heading mb-6" />
           <p className="text-body-large">
             I'm open to collaborations, internships, and exciting opportunities. Let's connect!
           </p>

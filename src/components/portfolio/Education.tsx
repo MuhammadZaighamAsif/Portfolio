@@ -3,6 +3,7 @@ import { GraduationCap, Calendar, MapPin } from "lucide-react";
 import { education } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReactBitsText from "@/components/ui/ReactBitsText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,16 +16,22 @@ export default function Education() {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(headerRef.current, {
+      const title = headerRef.current?.querySelector("h2");
+      const description = headerRef.current?.querySelector("p:last-child");
+
+      // Academic title settles into place
+      gsap.from(title, {
         scrollTrigger: {
           trigger: headerRef.current,
           start: "top 80%",
           toggleActions: "play none none reverse",
         },
-        y: 40,
+        y: -22,
+        rotation: 1.5,
         duration: 0.8,
         ease: "power3.out",
       });
+      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 16, duration: 0.7, delay: 0.15, ease: "power2.out" });
 
       const items = gridRef.current?.querySelectorAll(".education-item");
       if (items) {
@@ -53,9 +60,7 @@ export default function Education() {
           <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
             Academic Background
           </p>
-          <h2 className="text-heading mb-6">
-            Education
-          </h2>
+          <ReactBitsText text="Education" variant="blur" className="text-heading mb-6" />
           <p className="text-body-large">
             Building a strong foundation in software engineering and computer science.
           </p>

@@ -3,6 +3,7 @@ import { Briefcase, FileText, GraduationCap, X } from "lucide-react";
 import { experience } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReactBitsText from "@/components/ui/ReactBitsText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,16 +41,21 @@ export default function Experience() {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(headerRef.current, {
+      const title = headerRef.current?.querySelector("h2");
+      const description = headerRef.current?.querySelector("p:last-child");
+
+      // Timeline-like horizontal reveal
+      gsap.from(title, {
         scrollTrigger: {
           trigger: headerRef.current,
           start: "top 80%",
           toggleActions: "play none none reverse",
         },
-        y: 40,
+        x: -34,
         duration: 0.8,
         ease: "power3.out",
       });
+      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, x: 20, duration: 0.7, delay: 0.15, ease: "power2.out" });
 
       const items = itemsRef.current?.querySelectorAll(".experience-item");
       if (items) {
@@ -79,27 +85,25 @@ export default function Experience() {
             <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
               Career Journey
             </p>
-            <h2 className="text-heading mb-6">
-              Experience
-            </h2>
+            <ReactBitsText text="Experience" variant="slide" className="text-heading mb-6" />
             <p className="text-body-large">
               Professional roles and academic leadership that shaped my technical expertise.
             </p>
           </div>
 
           {/* Experience List */}
-          <div ref={itemsRef} className="max-w-3xl space-y-8">
+          <div ref={itemsRef} className="experience-list max-w-3xl space-y-8">
             {experience.map((exp) => (
               <article
                 key={`${exp.company}-${exp.duration}`}
-                className="experience-item card-minimal"
+                className="experience-item experience-card card-minimal"
               >
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <div
-                        className="w-10 h-10 flex items-center justify-center rounded-full"
+                        className="experience-icon w-10 h-10 flex items-center justify-center rounded-full"
                         style={{
                           background: "var(--accent)",
                           color: "var(--bg-primary)",
@@ -129,7 +133,7 @@ export default function Experience() {
                     </p>
                   </div>
                   <span
-                    className="text-sm font-medium"
+                    className="experience-date text-sm font-medium"
                     style={{ color: "var(--text-secondary)" }}
                   >
                     {exp.duration}
@@ -137,11 +141,11 @@ export default function Experience() {
                 </div>
 
                 {/* Description */}
-                <ul className="space-y-2 mb-6">
+                <ul className="experience-bullets space-y-2 mb-6">
                   {exp.bullets.map((bullet, idx) => (
                     <li
                       key={idx}
-                      className="flex items-start gap-3 text-sm leading-relaxed"
+                      className="experience-bullet flex items-start gap-3 text-sm leading-relaxed"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       <span style={{ color: "var(--accent)" }}>•</span>
@@ -152,7 +156,7 @@ export default function Experience() {
 
                 {/* Certificates */}
                 {exp.company === "Developers Hub Corporation" && (
-                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+                  <div className="experience-documents flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
                       onClick={() => openModal('/developers_hub_completion_cert.pdf')}
                       className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
@@ -177,8 +181,8 @@ export default function Experience() {
                     </button>
                   </div>
                 )}
-                {exp.company === "Quantam Logics" && (
-                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+                {exp.company === "Quantum Logics Pvt Ltd" && (
+                  <div className="experience-documents flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
                       onClick={() => openModal('/quantum_logics_offer_letter.pdf')}
                       className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
@@ -190,12 +194,8 @@ export default function Experience() {
                       <FileText size={16} />
                       Offer Letter
                     </button>
-                  </div>
-                )}
-                {exp.company === "ENTER:PRO" && (
-                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
-                      onClick={() => openModal('/ess-offer-letter.png')}
+                      onClick={() => openModal('/qubit-report-1.pdf')}
                       className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
                       style={{
                         borderColor: "var(--border-color)",
@@ -203,7 +203,7 @@ export default function Experience() {
                       }}
                     >
                       <FileText size={16} />
-                      Offer Letter
+                      Project Report
                     </button>
                   </div>
                 )}

@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 import { skills } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReactBitsText from "@/components/ui/ReactBitsText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,17 +15,23 @@ export default function Skills() {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Header animation
-      gsap.from(headerRef.current, {
+      const title = headerRef.current?.querySelector("h2");
+      const description = headerRef.current?.querySelector("p:last-child");
+
+      // Word-lift style heading reveal
+      gsap.from(title, {
         scrollTrigger: {
           trigger: headerRef.current,
           start: "top 80%",
           toggleActions: "play none none reverse",
         },
-        y: 40,
+        y: 24,
+        rotationX: -55,
+        transformOrigin: "50% 100%",
         duration: 0.8,
         ease: "power3.out",
       });
+      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 18, duration: 0.7, delay: 0.15, ease: "power2.out" });
 
       // Cards stagger
       const cards = gridRef.current?.querySelectorAll(".skill-group");
@@ -54,9 +61,7 @@ export default function Skills() {
           <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
             Technical Expertise
           </p>
-          <h2 className="text-heading mb-6">
-            Skills & Technologies
-          </h2>
+          <ReactBitsText text="Skills & Technologies" variant="fold" className="text-heading mb-6" />
           <p className="text-body-large">
             A comprehensive toolkit for building modern, scalable applications across the full stack.
           </p>
