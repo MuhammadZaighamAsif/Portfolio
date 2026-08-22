@@ -17,7 +17,7 @@ export const skills = [
   },
   {
     category: "Backend",
-    items: ["Node.js", "Express.js", "Flask"],
+    items: ["Node.js", "Express.js", "Flask","Django"],
   },
   {
     category: "AI / Data",
