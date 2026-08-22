@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { Menu, X, Sun, Moon, Code2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
+import gsap from "gsap";
 
 const NAV_LINKS = [
   { id: "skills", label: "Skills" },
@@ -20,9 +21,10 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const activeSection = useScrollSpy(NAV_LINKS.map((l) => l.id));
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -30,98 +32,107 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const offset = 80;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({ top, behavior: "smooth" });
     }
     setMobileOpen(false);
   };
 
-  
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "nav-glass" : "bg-transparent"
-        }`}
+        ref={navRef}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled 
+            ? "var(--bg-primary)" 
+            : "transparent",
+          borderBottom: scrolled 
+            ? "1px solid var(--border-color)" 
+            : "none",
+        }}
       >
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-2 group"
-          >
-            <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow-primary">
-              <Code2 size={18} className="text-white" />
+        <div className="container-custom">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <button
+              onClick={scrollToTop}
+              className="text-lg font-bold hover-underline transition-opacity hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              MZA
+            </button>
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-8">
+              {NAV_LINKS.map((link) => (
+                <button
+                  key={link.id}
+                  onClick={() => scrollTo(link.id)}
+                  className="text-sm hover-underline transition-colors"
+                  style={{
+                    color: activeSection === link.id 
+                      ? "var(--accent)" 
+                      : "var(--text-secondary)",
+                  }}
+                >
+                  {link.label}
+                </button>
+              ))}
             </div>
-            <span className="font-bold text-base text-foreground-default tracking-tight hidden sm:block">
-              Zaigham<span className="text-accent-color">.</span>
-            </span>
-          </button>
 
-          {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {/* Right side */}
+            <div className="flex items-center gap-4">
+              {/* Theme toggle */}
               <button
-                key={link.id}
-                onClick={() => scrollTo(link.id)}
-                className={`nav-link ${activeSection === link.id ? "nav-link-active" : ""}`}
+                onClick={onToggle}
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-current transition-all hover:bg-current hover:text-primary"
+                style={{ color: "var(--text-secondary)" }}
+                aria-label="Toggle theme"
               >
-                {link.label}
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
               </button>
-            ))}
-          </div>
 
-          {/* Theme toggle + mobile menu */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onToggle}
-              aria-label="Toggle color theme"
-              className="theme-toggle"
-            >
-              <span className={`theme-thumb ${theme === "dark" ? "translate-x-6" : "translate-x-1"}`}>
-                {theme === "dark" ? (
-                  <Moon size={11} className="text-white" />
-                ) : (
-                  <Sun size={11} className="text-white" />
-                )}
-              </span>
-            </button>
-            <a
-              href="/resume.pdf"
-              download="Zaigham_Resume.pdf"
-              className="hidden md:inline-flex items-center gap-2 btn-primary"
-              onClick={() => window.scrollTo({ top: 0 })}
-            >
-              Resume
-            </a>
-            <button
-              onClick={() => setMobileOpen((o) => !o)}
-              className="md:hidden p-2 rounded-lg text-foreground-subtle hover:text-foreground-default transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+              {/* Mobile menu toggle */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="md:hidden w-9 h-9 flex items-center justify-center"
+                style={{ color: "var(--text-primary)" }}
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile overlay */}
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col pt-16">
-          <div
-            className="absolute inset-0 bg-surface/90 backdrop-blur-xl"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="relative z-10 flex flex-col items-center justify-center gap-4 flex-1">
-            {NAV_LINKS.map((link) => (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          style={{
+            background: "var(--bg-primary)",
+            paddingTop: "80px",
+          }}
+        >
+          <div className="container-custom h-full flex flex-col justify-center gap-8">
+            {NAV_LINKS.map((link, idx) => (
               <button
                 key={link.id}
                 onClick={() => scrollTo(link.id)}
-                className={`text-2xl font-semibold transition-colors ${
-                  activeSection === link.id
-                    ? "text-primary-color"
-                    : "text-foreground-default hover:text-primary-color"
-                }`}
+                className="text-2xl font-medium text-left transition-colors hover:opacity-70"
+                style={{
+                  color: activeSection === link.id 
+                    ? "var(--accent)" 
+                    : "var(--text-primary)",
+                  animation: `fadeUp 0.5s ${idx * 0.1}s both`,
+                }}
               >
                 {link.label}
               </button>

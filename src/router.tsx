@@ -1,8 +1,9 @@
+import { createBrowserRouter } from "react-router-dom";
 import Index from "./pages/Index";
 import ProjectsPage from "./pages/ProjectsPage";
 import NotFound from "./pages/NotFound";
 
-export const routers = [
+const routeConfig = [
   {
     path: "/",
     name: "home",
@@ -21,10 +22,4 @@ export const routers = [
   },
 ];
 
-declare global {
-  interface Window {
-    __routers__: typeof routers;
-  }
-}
-
-window.__routers__ = routers;
+export const router = createBrowserRouter(routeConfig);

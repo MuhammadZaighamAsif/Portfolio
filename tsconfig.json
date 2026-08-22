@@ -9,12 +9,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "ignoreDeprecations": "5.0",
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
     "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false
+    "allowJs": true
   }
 }

@@ -1,138 +1,203 @@
-// import { useEffect, useState } from "react";
-// import { Code2 } from "lucide-react";
-
-// interface SplashScreenProps {
-//   onComplete: () => void;
-// }
-
-// export default function SplashScreen({ onComplete }: SplashScreenProps) {
-//   const [progress, setProgress] = useState(0);
-
-//   useEffect(() => {
-//     // Simulate loading progress
-//     const interval = setInterval(() => {
-//       setProgress((prev) => {
-//         if (prev >= 100) {
-//           clearInterval(interval);
-//           setTimeout(onComplete, 500); // Small delay before hiding
-//           return 100;
-//         }
-//         return prev + 10;
-//       });
-//     }, 100);
-
-//     return () => clearInterval(interval);
-//   }, [onComplete]);
-
-//   return (
-//     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-surface">
-//       {/* Background orbs */}
-//       <div className="orb orb-1" style={{ animation: "float 6s ease-in-out infinite" }} />
-//       <div className="orb orb-2" style={{ animation: "float 8s ease-in-out infinite" }} />
-//       <div className="orb orb-3" style={{ animation: "float 7s ease-in-out infinite" }} />
-
-//       <div className="relative z-10 flex flex-col items-center gap-8">
-//         {/* Logo with pulse animation */}
-//         <div className="relative">
-//           <div className="absolute inset-0 bg-gradient-primary rounded-2xl blur-2xl opacity-50 animate-pulse" />
-//           <div className="relative w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-primary">
-//             <Code2 size={40} className="text-white animate-bounce-slow" />
-//           </div>
-//         </div>
-
-//         {/* Loading text */}
-//         <div className="text-center">
-//           <h2 className="text-2xl font-bold text-gradient mb-2">
-//             Muhammad Zaigham Asif
-//           </h2>
-//           <p className="text-sm text-foreground-subtle">
-//             Please wait a moment...
-//           </p>
-//         </div>
-
-//         {/* Progress bar */}
-//         <div className="w-64 h-2 bg-surface-elevated rounded-full overflow-hidden">
-//           <div
-//             className="h-full bg-gradient-primary transition-all duration-300 ease-out rounded-full"
-//             style={{ width: `${progress}%` }}
-//           />
-//         </div>
-
-//         {/* Progress percentage */}
-//         <p className="text-sm font-semibold text-primary-color">
-//           {progress}%
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import gsap from "gsap";
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
-const TIPS = [
-  "Loading terrain...",
-  "Punching trees...",
-  "Crafting a pickaxe...",
-  "Smelting iron...",
-  "Mining diamonds...",
-  "Building a portfolio...",
-  "Taming skills...",
-  "Enchanting projects...",
-  "Placing torches...",
-  "World ready!",
-];
-
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [progress, setProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const squaresRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(onComplete, 500);
-          return 100;
-        }
-        return prev + 10;
+    // Animate squares
+    const squares = squaresRef.current?.querySelectorAll(".acid-square");
+    if (squares) {
+      squares.forEach((square, i) => {
+        gsap.to(square, {
+          rotation: 360,
+          scale: gsap.utils.random(0.5, 1.5),
+          x: gsap.utils.random(-50, 50),
+          y: gsap.utils.random(-50, 50),
+          duration: gsap.utils.random(2, 4),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: i * 0.1,
+        });
       });
-    }, 100);
+    }
 
-    return () => clearInterval(interval);
+    // Content entrance
+    gsap.from(contentRef.current, {
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.8,
+      ease: "power2.out",
+      delay: 0.2,
+    });
+
+    // Progress animation
+    const duration = 2500;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / duration) * 100, 100);
+      
+      setProgress(Math.floor(newProgress));
+
+      if (newProgress < 100) {
+        requestAnimationFrame(animate);
+      } else {
+        // Exit animation
+        gsap.to(squaresRef.current, {
+          scale: 0,
+          opacity: 0,
+          duration: 0.6,
+          ease: "back.in(1.5)",
+        });
+        gsap.to(contentRef.current, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.in",
+        });
+        gsap.to(containerRef.current, {
+          opacity: 0,
+          duration: 0.4,
+          delay: 0.3,
+          onComplete,
+        });
+      }
+    };
+
+    setTimeout(animate, 300);
   }, [onComplete]);
 
-  const tipIndex = Math.min(Math.floor(progress / 10), TIPS.length - 1);
+  // Generate acid squares
+  const generateSquares = () => {
+    const squares = [];
+    const positions = [
+      { top: "10%", left: "15%", size: 80, delay: 0 },
+      { top: "20%", right: "20%", size: 60, delay: 0.2 },
+      { bottom: "25%", left: "25%", size: 100, delay: 0.4 },
+      { bottom: "15%", right: "15%", size: 70, delay: 0.6 },
+      { top: "50%", left: "8%", size: 50, delay: 0.8 },
+      { top: "60%", right: "10%", size: 90, delay: 1 },
+      { top: "35%", left: "45%", size: 40, delay: 1.2 },
+    ];
+
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i];
+      squares.push(
+        <div
+          key={i}
+          className="acid-square absolute"
+          style={{
+            ...pos,
+            width: pos.size,
+            height: pos.size,
+            border: "2px solid var(--accent)",
+            opacity: 0.3,
+            pointerEvents: "none",
+          }}
+        />
+      );
+    }
+    return squares;
+  };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-surface">
-      <div className="orb orb-1" style={{ animation: "float 6s ease-in-out infinite" }} />
-      <div className="orb orb-2" style={{ animation: "float 8s ease-in-out infinite" }} />
-      <div className="orb orb-3" style={{ animation: "float 7s ease-in-out infinite" }} />
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+      style={{
+        background: "var(--bg-primary)",
+      }}
+    >
+      {/* Acid squares background */}
+      <div ref={squaresRef} className="absolute inset-0">
+        {generateSquares()}
+      </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-8">
-        <div className="animate-bounce-slow">
-          <div className="mc-block">
-            <div className="mc-block-grass" />
+      {/* Content */}
+      <div ref={contentRef} className="relative z-10 text-center">
+        {/* Logo */}
+        <div className="mb-8">
+          <div
+            className="inline-flex items-center justify-center w-20 h-20 mb-3 relative"
+          >
+            {/* Rotating square behind text */}
+            <div
+              className="absolute inset-0 border-2"
+              style={{
+                borderColor: "var(--accent)",
+                animation: "rotate 3s linear infinite",
+              }}
+            />
+            <span
+              className="relative text-3xl font-bold z-10"
+              style={{ color: "var(--text-primary)" }}
+            >
+              MZA
+            </span>
           </div>
         </div>
 
-        <div className="text-center">
-          <h2 className="mc-font text-lg md:text-xl text-gradient mb-3">
-            Muhammad Zaigham Asif
-          </h2>
-          <p className="mc-font text-[10px] text-foreground-subtle">
-            {TIPS[tipIndex]}
-          </p>
-        </div>
+        {/* Progress bar container */}
+        <div className="w-56 mx-auto">
+          {/* Progress bar background */}
+          <div
+            className="relative h-1 mb-3 overflow-hidden"
+            style={{ background: "var(--border-color)" }}
+          >
+            {/* Animated progress */}
+            <div
+              className="absolute inset-y-0 left-0 transition-all duration-200 ease-out"
+              style={{
+                width: `${progress}%`,
+                background: "var(--accent)",
+              }}
+            />
+            {/* Shimmer effect */}
+            <div
+              className="absolute inset-0 opacity-50"
+              style={{
+                background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
+                animation: "shimmer 1.5s infinite",
+                transform: `translateX(${(progress - 100)}%)`,
+              }}
+            />
+          </div>
 
-        <div className="mc-progress-track">
-          <div className="mc-progress-fill" style={{ width: `${progress}%` }} />
+          {/* Progress percentage */}
+          <div className="flex items-center justify-between text-xs">
+            <span
+              className="font-medium tracking-wider"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              LOADING
+            </span>
+            <span
+              className="font-bold tabular-nums"
+              style={{ color: "var(--accent)" }}
+            >
+              {progress}%
+            </span>
+          </div>
         </div>
-
-        <p className="mc-font text-xs text-primary-color">{progress}%</p>
       </div>
+
+      {/* Add keyframes for shimmer animation */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,21 +1,33 @@
 import { useRef, useState, useEffect } from "react";
-import { Briefcase, FileText, GraduationCap, ArrowUpRight, X } from "lucide-react";
-import { useIntersection } from "@/hooks/useIntersection";
+import { Briefcase, FileText, GraduationCap, X } from "lucide-react";
 import { experience } from "@/data/portfolio";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Experience() {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useIntersection(ref);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<HTMLDivElement>(null);
   const [modalUrl, setModalUrl] = useState<string | null>(null);
 
   const openModal = (url: string) => {
     setModalUrl(url);
-    try { document.body.style.overflow = "hidden"; } catch {}
+    try { 
+      document.body.style.overflow = "hidden"; 
+    } catch (error) {
+      // Silently handle error
+    }
   };
 
   const closeModal = () => {
     setModalUrl(null);
-    try { document.body.style.overflow = ""; } catch {}
+    try { 
+      document.body.style.overflow = ""; 
+    } catch (error) {
+      // Silently handle error
+    }
   };
 
   useEffect(() => {
@@ -24,132 +36,217 @@ export default function Experience() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(headerRef.current, {
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      });
+
+      const items = itemsRef.current?.querySelectorAll(".experience-item");
+      if (items) {
+        gsap.from(items, {
+          scrollTrigger: {
+            trigger: itemsRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          y: 50,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power3.out",
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
-    <section id="experience" className="section-container">
-      <div
-        ref={ref}
-        className={`section-inner transition-all duration-700 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="section-header">
-          <span className="section-tag">Where I've worked</span>
-          <h2 className="section-title">Experience</h2>
-          <p className="section-subtitle">
-            Professional roles and meaningful academic leadership that shaped my skills.
-          </p>
-        </div>
+      <section ref={sectionRef} id="experience" className="section">
+        <div className="container-custom">
+          {/* Header */}
+          <div ref={headerRef} className="max-w-3xl mb-16">
+            <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
+              Career Journey
+            </p>
+            <h2 className="text-heading mb-6">
+              Experience
+            </h2>
+            <p className="text-body-large">
+              Professional roles and academic leadership that shaped my technical expertise.
+            </p>
+          </div>
 
-        <div className="relative max-w-3xl mx-auto">
-          <div className="timeline-rail" />
-
-          <div className="space-y-8 pl-10">
-            {experience.map((exp, i) => (
-              <div
+          {/* Experience List */}
+          <div ref={itemsRef} className="max-w-3xl space-y-8">
+            {experience.map((exp) => (
+              <article
                 key={`${exp.company}-${exp.duration}`}
-                className={`relative transition-all duration-700 ${
-                  visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
-                }`}
-                style={{ transitionDelay: `${i * 150}ms` }}
+                className="experience-item card-minimal"
               >
-                <div className="timeline-dot">
-                  {exp.type === "Academic" ? (
-                    <GraduationCap size={10} className="text-white" />
-                  ) : (
-                    <Briefcase size={10} className="text-white" />
-                  )}
-                </div>
-
-                <div className="experience-card glass-card p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                    <span className="date-chip">{exp.duration}</span>
-                    <span className="type-badge">{exp.type}</span>
-                  </div>
-
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold text-foreground-default leading-tight">
+                {/* Header */}
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div
+                        className="w-10 h-10 flex items-center justify-center rounded-full"
+                        style={{
+                          background: "var(--accent)",
+                          color: "var(--bg-primary)",
+                        }}
+                      >
+                        {exp.type === "Academic" ? (
+                          <GraduationCap size={18} />
+                        ) : (
+                          <Briefcase size={18} />
+                        )}
+                      </div>
+                      <span
+                        className="text-xs px-3 py-1 rounded-full border uppercase tracking-wider font-medium"
+                        style={{
+                          borderColor: "var(--border-color)",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {exp.type}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
                       {exp.role}
                     </h3>
-                    <p className="experience-company mt-2">{exp.company}</p>
+                    <p className="font-medium" style={{ color: "var(--accent)" }}>
+                      {exp.company}
+                    </p>
                   </div>
-
-                  <ul className="space-y-2.5">
-                    {exp.bullets.map((b, bi) => (
-                      <li key={bi} className="flex items-start gap-2.5 text-sm leading-6 text-foreground-subtle">
-                        <span className="bullet-dot" />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-5 flex flex-wrap items-center gap-3">
-                    {exp.company === "Developers Hub Corporation" && (
-                      <button
-                        onClick={() => openModal('/developers_hub_completion_cert.pdf')}
-                        className="experience-cta"
-                      >
-                        <FileText size={15} />
-                        View Certificate
-                        <ArrowUpRight size={14} />
-                      </button>
-                    )}
-
-                    {exp.company === "Exper System Solution" && (
-                      <button
-                        onClick={() => openModal('/ESS offer letter.png')}
-                        className="experience-cta experience-cta-primary"
-                      >
-                        <FileText size={15} />
-                        View Offer Letter
-                        <ArrowUpRight size={14} />
-                      </button>
-                    )}
-
-                    {exp.company === "Quantum Logics Pvt Ltd" && (
-                      <>
-                        <button
-                          onClick={() => openModal('/internship-certificate.pdf')}
-                          className="experience-cta"
-                        >
-                          <FileText size={15} />
-                          View Certificate
-                          <ArrowUpRight size={14} />
-                        </button>
-                        <button
-                          onClick={() => openModal(encodeURI('/qubit-report (1).pdf'))}
-                          className="experience-cta experience-cta-secondary"
-                        >
-                          <FileText size={15} />
-                          View Report
-                          <ArrowUpRight size={14} />
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {exp.duration}
+                  </span>
                 </div>
-              </div>
+
+                {/* Description */}
+                <ul className="space-y-2 mb-6">
+                  {exp.bullets.map((bullet, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-3 text-sm leading-relaxed"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      <span style={{ color: "var(--accent)" }}>•</span>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Certificates */}
+                {exp.company === "Developers Hub Corporation" && (
+                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+                    <button
+                      onClick={() => openModal('/developers_hub_completion_cert.pdf')}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      style={{
+                        borderColor: "var(--border-color)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      <FileText size={16} />
+                      Certificate
+                    </button>
+                    <button
+                      onClick={() => openModal('/dev_hub_offer_letter.pdf')}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      style={{
+                        borderColor: "var(--border-color)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      <FileText size={16} />
+                      Offer Letter
+                    </button>
+                  </div>
+                )}
+                {exp.company === "Quantam Logics" && (
+                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+                    <button
+                      onClick={() => openModal('/quantum_logics_offer_letter.pdf')}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      style={{
+                        borderColor: "var(--border-color)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      <FileText size={16} />
+                      Offer Letter
+                    </button>
+                  </div>
+                )}
+                {exp.company === "ENTER:PRO" && (
+                  <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+                    <button
+                      onClick={() => openModal('/ess-offer-letter.png')}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      style={{
+                        borderColor: "var(--border-color)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      <FileText size={16} />
+                      Offer Letter
+                    </button>
+                  </div>
+                )}
+              </article>
             ))}
           </div>
         </div>
-      </div>
-    </section>
 
-    {modalUrl && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-        <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
-        <div className="relative z-10 w-full max-w-5xl h-[80vh] bg-card border border-border rounded-lg overflow-hidden">
-          <div className="flex items-center justify-between p-3 border-b border-border bg-background">
-            <div className="text-sm font-semibold">Document preview</div>
-            <div className="flex items-center gap-2">
-              <a href={modalUrl} target="_blank" rel="noopener noreferrer" className="card-link">Open in new tab</a>
-              <button onClick={closeModal} className="p-2 rounded hover:bg-muted"><X size={16} /></button>
-            </div>
-          </div>
-          <iframe src={modalUrl} className="w-full h-full" title="Document preview" />
+        {/* Divider */}
+        <div className="container-custom mt-24">
+          <div className="line" />
         </div>
-      </div>
-    )}
+      </section>
+
+      {/* Modal */}
+      {modalUrl && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ background: "rgba(0, 0, 0, 0.9)" }}
+          onClick={closeModal}
+        >
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full border transition-colors"
+            style={{
+              borderColor: "rgba(255, 255, 255, 0.3)",
+              color: "white",
+            }}
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+          <div className="max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <iframe
+              src={modalUrl}
+              className="w-full h-[80vh]"
+              title="Document"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -3,8 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { routers } from "./router";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
 import SplashScreen from "@/components/portfolio/SplashScreen";
 
 const queryClient = new QueryClient();
@@ -12,7 +12,6 @@ const queryClient = new QueryClient();
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
-  const router = createBrowserRouter(routers);
 
   const handleSplashComplete = () => {
     setShowSplash(false);

@@ -1,64 +1,119 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { GraduationCap, Calendar, MapPin } from "lucide-react";
-import { useIntersection } from "@/hooks/useIntersection";
 import { education } from "@/data/portfolio";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Education() {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useIntersection(ref);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(headerRef.current, {
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      });
+
+      const items = gridRef.current?.querySelectorAll(".education-item");
+      if (items) {
+        gsap.from(items, {
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          y: 50,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power3.out",
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section id="education" className="section-container">
-      <div
-        ref={ref}
-        className={`section-inner transition-all duration-700 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="section-header">
-          <span className="section-tag">Academic background</span>
-          <h2 className="section-title">Education</h2>
-          <p className="section-subtitle">
+    <section ref={sectionRef} id="education" className="section">
+      <div className="container-custom">
+        {/* Header */}
+        <div ref={headerRef} className="max-w-3xl mb-16">
+          <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
+            Academic Background
+          </p>
+          <h2 className="text-heading mb-6">
+            Education
+          </h2>
+          <p className="text-body-large">
             Building a strong foundation in software engineering and computer science.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {education.map((edu, i) => (
-            <div
-              key={i}
-              className="glass-card p-6 group"
-              style={{ transitionDelay: `${i * 120}ms` }}
+        {/* Education Grid */}
+        <div ref={gridRef} className="grid-minimal max-w-4xl">
+          {education.map((edu) => (
+            <article
+              key={edu.institution}
+              className="education-item card-minimal"
             >
-              <div className="flex items-start gap-4">
-                <div className="education-icon-wrap shrink-0">
-                  <GraduationCap size={22} className="text-primary-color" />
+              <div className="flex items-start gap-4 mb-4">
+                <div
+                  className="w-12 h-12 flex items-center justify-center rounded-full flex-shrink-0"
+                  style={{
+                    background: "var(--accent)",
+                    color: "var(--bg-primary)",
+                  }}
+                >
+                  <GraduationCap size={20} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground-default mb-1 leading-snug group-hover:text-primary-color transition-colors">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
                     {edu.degree}
                   </h3>
-                  <p className="text-primary-color font-semibold text-sm mb-3">
+                  <p className="font-medium mb-3" style={{ color: "var(--accent)" }}>
                     {edu.institution}
-                  </p>
-                  <div className="flex flex-wrap gap-3 text-xs text-foreground-subtle mb-3">
-                    <span className="flex items-center gap-1">
-                      <Calendar size={11} className="text-accent-color" />
-                      {edu.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin size={11} className="text-accent-color" />
-                      {edu.location}
-                    </span>
-                  </div>
-                  <p className="text-xs text-foreground-subtle leading-relaxed">
-                    {edu.description}
                   </p>
                 </div>
               </div>
-            </div>
+
+              {/* Details */}
+              <div className="flex flex-wrap gap-4 text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
+                <span className="flex items-center gap-2">
+                  <Calendar size={16} />
+                  {edu.duration}
+                </span>
+                <span className="flex items-center gap-2">
+                  <MapPin size={16} />
+                  {edu.location}
+                </span>
+              </div>
+
+              {/* Description */}
+              <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                {edu.description}
+              </p>
+            </article>
           ))}
         </div>
+      </div>
+
+      {/* Divider */}
+      <div className="container-custom mt-24">
+        <div className="line" />
       </div>
     </section>
   );

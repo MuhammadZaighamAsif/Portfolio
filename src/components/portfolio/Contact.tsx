@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Mail, Phone, MapPin, Github, Linkedin, Send, Loader2 } from "lucide-react";
-import { useIntersection } from "@/hooks/useIntersection";
 import { meta } from "@/data/portfolio";
 import emailjs from "@emailjs/browser";
 import { toast } from "@/hooks/use-toast";
@@ -43,9 +42,8 @@ const socialLinks = [
 ];
 
 export default function Contact() {
-  const ref = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const visible = useIntersection(ref);
+  const ref = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,31 +92,32 @@ export default function Contact() {
 
         formRef.current.reset();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Email send error:", error);
+      const errorObj = error as { text?: string; status?: number; message?: string };
       console.error("Error details:", {
-        text: error?.text,
-        status: error?.status,
-        message: error?.message
+        text: errorObj?.text,
+        status: errorObj?.status,
+        message: errorObj?.message
       });
       
       // More detailed error message
       let errorMessage = "Please try again or contact me directly via email.";
       let errorTitle = "Failed to send message";
       
-      if (error?.text) {
+      if (errorObj?.text) {
         // Check for specific error messages
-        if (error.text.includes("template") || error.text.includes("Template")) {
+        if (errorObj.text.includes("template") || errorObj.text.includes("Template")) {
           errorTitle = "Template Error";
-          errorMessage = "Template ID not found. Please check EMAILJS_TEMPLATE.md or FIX_TEMPLATE_ID.md for help.";
-        } else if (error.text.includes("service") || error.text.includes("Service")) {
+          errorMessage = "Template ID not found. Please check your EmailJS configuration.";
+        } else if (errorObj.text.includes("service") || errorObj.text.includes("Service")) {
           errorTitle = "Service Error";
           errorMessage = "Service ID not found. Please verify your EmailJS service is connected.";
-        } else if (error.text.includes("public key") || error.text.includes("Public Key")) {
+        } else if (errorObj.text.includes("public key") || errorObj.text.includes("Public Key")) {
           errorTitle = "Authentication Error";
           errorMessage = "Invalid Public Key. Please check your EmailJS account settings.";
         } else {
-          errorMessage = error.text;
+          errorMessage = errorObj.text;
         }
       }
       
@@ -133,48 +132,70 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section-container">
+    <section id="contact" className="section">
       <div
         ref={ref}
-        className={`section-inner transition-all duration-700 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className="container-custom"
       >
-        <div className="section-header">
-          <span className="section-tag">Get in touch</span>
-          <h2 className="section-title">Contact</h2>
-          <p className="section-subtitle">
+        {/* Header */}
+        <div className="max-w-3xl mb-16">
+          <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
+            Get in touch
+          </p>
+          <h2 className="text-heading mb-6">
+            Contact
+          </h2>
+          <p className="text-body-large">
             I'm open to collaborations, internships, and exciting opportunities. Let's connect!
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl">
           {/* Contact info */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {contactItems.map((item, i) => (
-              <div key={i} className="glass-card p-5 text-center group">
-                <div className="contact-icon-wrap mx-auto mb-3">
-                  <item.icon size={20} className="text-primary-color" />
+              <div 
+                key={i} 
+                className="card-minimal p-5 text-center group"
+              >
+                <div 
+                  className="w-12 h-12 flex items-center justify-center rounded-full mx-auto mb-3"
+                  style={{
+                    background: "var(--accent)",
+                    color: "var(--bg-primary)"
+                  }}
+                >
+                  <item.icon size={20} />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-foreground-subtle mb-1">
+                <p 
+                  className="text-xs font-semibold uppercase tracking-widest mb-1"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {item.label}
                 </p>
                 {item.href ? (
                   <a
                     href={item.href}
-                    className="text-sm text-foreground-default hover:text-primary-color transition-colors font-medium break-all"
+                    className="text-sm font-medium break-all hover:underline"
+                    style={{ color: "var(--text-primary)" }}
                   >
                     {item.value}
                   </a>
                 ) : (
-                  <p className="text-sm text-foreground-default font-medium">{item.value}</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    {item.value}
+                  </p>
                 )}
               </div>
             ))}
           </div>
+
           {/* Social profiles */}
-          <div className="glass-card p-6">
-            <h3 className="text-center font-semibold text-foreground-default mb-6">
+          <div className="card-minimal p-6 mb-8">
+            <h3 
+              className="text-center font-semibold mb-6" 
+              style={{ color: "var(--text-primary)" }}
+            >
               Find me on the web
             </h3>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -184,31 +205,53 @@ export default function Contact() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="social-profile-card group"
+                  className="flex items-center gap-3 p-4 rounded-lg border transition-all group w-full sm:w-auto"
+                  style={{
+                    borderColor: "var(--border-color)",
+                    background: "var(--bg-secondary)"
+                  }}
                 >
-                  <div className="social-profile-icon">
-                    <link.icon size={22} />
+                  <div 
+                    className="w-10 h-10 flex items-center justify-center rounded-full"
+                    style={{
+                      background: "var(--accent)",
+                      color: "var(--bg-primary)"
+                    }}
+                  >
+                    <link.icon size={20} />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm text-foreground-default group-hover:text-primary-color transition-colors">
+                    <p 
+                      className="font-semibold text-sm transition-colors group-hover:underline"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {link.label}
                     </p>
-                    <p className="text-xs text-foreground-subtle">@{link.username}</p>
+                    <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                      @{link.username}
+                    </p>
                   </div>
                 </a>
               ))}
             </div>
           </div>
-          <br />
+
           {/* Contact Form */}
-          <div className="glass-card p-8 mb-8">
-            <h3 className="text-xl font-semibold text-foreground-default mb-6 text-center">
+          <div className="card-minimal p-8">
+            <h3 
+              className="text-xl font-semibold mb-6 text-center"
+              style={{ color: "var(--text-primary)" }}
+            >
               Send Me a Message
             </h3>
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="user_name" className="block text-sm font-medium text-foreground-default mb-2">
+                  <label 
+                    htmlFor="user_name" 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     Your Name
                   </label>
                   <input
@@ -216,13 +259,21 @@ export default function Contact() {
                     id="user_name"
                     name="user_name"
                     required
-                    style={{ color: 'black' }}
-                    className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default placeholder:text-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border transition-all focus:outline-none"
+                    style={{
+                      background: "var(--bg-secondary)",
+                      borderColor: "var(--border-color)",
+                      color: "var(--text-primary)"
+                    }}
                     placeholder="John Doe"
                   />
                 </div>
                 <div>
-                  <label htmlFor="user_email" className="block text-sm font-medium text-foreground-default mb-2">
+                  <label 
+                    htmlFor="user_email" 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     Your Email
                   </label>
                   <input
@@ -230,14 +281,22 @@ export default function Contact() {
                     id="user_email"
                     name="user_email"
                     required
-                    style={{ color: 'black' }}
-                    className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default placeholder:text-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border transition-all focus:outline-none"
+                    style={{
+                      background: "var(--bg-secondary)",
+                      borderColor: "var(--border-color)",
+                      color: "var(--text-primary)"
+                    }}
                     placeholder="john@example.com"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-foreground-default mb-2">
+                <label 
+                  htmlFor="subject" 
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   Subject
                 </label>
                 <input
@@ -245,13 +304,21 @@ export default function Contact() {
                   id="subject"
                   name="subject"
                   required
-                  style={{ color: 'black' }}
-                  className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default placeholder:text-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border transition-all focus:outline-none"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    borderColor: "var(--border-color)",
+                    color: "var(--text-primary)"
+                  }}
                   placeholder="Project Inquiry"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground-default mb-2">
+                <label 
+                  htmlFor="message" 
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   Message
                 </label>
                 <textarea
@@ -259,15 +326,23 @@ export default function Contact() {
                   name="message"
                   required
                   rows={5}
-                  style={{ color: 'black' }}
-                  className="w-full px-4 py-3 rounded-lg bg-surface-elevated border border-outline-default placeholder:text-foreground-subtle focus:outline-none focus:ring-2 focus:ring-primary-color focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-lg border transition-all focus:outline-none resize-none"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    borderColor: "var(--border-color)",
+                    color: "var(--text-primary)"
+                  }}
                   placeholder="Tell me about your project or opportunity..."
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: "var(--accent)",
+                  color: "white"
+                }}
               >
                 {loading ? (
                   <>
@@ -283,6 +358,11 @@ export default function Contact() {
               </button>
             </form>
           </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mt-24">
+          <div className="line" />
         </div>
       </div>
     </section>

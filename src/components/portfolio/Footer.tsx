@@ -1,21 +1,40 @@
-import { Heart, Code2 } from "lucide-react";
+import { Code2 } from "lucide-react";
 import { meta } from "@/data/portfolio";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-outline-default py-8">
-      <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow-primary">
-            <Code2 size={14} className="text-white" />
+    <footer 
+      className="py-12 border-t"
+      style={{ borderColor: "var(--border-color)" }}
+    >
+      <div className="container-custom">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
+            <div 
+              className="w-9 h-9 flex items-center justify-center rounded-full"
+              style={{ 
+                background: "var(--text-primary)",
+                color: "var(--bg-primary)"
+              }}
+            >
+              <Code2 size={18} />
+            </div>
+            <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              {meta.name}
+            </span>
           </div>
-          <span className="text-sm font-semibold text-foreground-default">
-            {meta.name}
-          </span>
+
+          {/* Copyright */}
+          <p 
+            className="text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            © {currentYear} All rights reserved
+          </p>
         </div>
-        <p className="text-xs text-foreground-subtle">
-          © {new Date().getFullYear()} All rights reserved
-        </p>
       </div>
     </footer>
   );
