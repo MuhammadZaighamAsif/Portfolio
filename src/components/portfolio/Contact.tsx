@@ -132,13 +132,10 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section">
-      <div
-        ref={ref}
-        className="container-custom"
-      >
+    <section id="contact" className="section section-contact">
+      <div ref={ref} className="container-custom flex flex-col items-center text-center">
         {/* Header */}
-        <div className="max-w-3xl mb-16">
+        <div className="max-w-3xl mb-16 w-full">
           <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
             Get in touch
           </p>
@@ -150,7 +147,7 @@ export default function Contact() {
           </p>
         </div>
 
-        <div className="max-w-3xl">
+        <div className="max-w-3xl w-full text-left">
           {/* Contact info */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {contactItems.map((item, i) => (

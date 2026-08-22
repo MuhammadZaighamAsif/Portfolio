@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Github, ExternalLink, ArrowRight } from "lucide-react";
+import { Github, ExternalLink, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import gsap from "gsap";
@@ -24,7 +24,6 @@ export default function Projects() {
           toggleActions: "play none none reverse",
         },
         y: 40,
-        opacity: 0,
         duration: 0.8,
         ease: "power3.out",
       });
@@ -39,7 +38,6 @@ export default function Projects() {
             toggleActions: "play none none reverse",
           },
           y: 60,
-          opacity: 0,
           stagger: 0.1,
           duration: 0.8,
           ease: "power3.out",
@@ -54,7 +52,7 @@ export default function Projects() {
   const displayProjects = projects.slice(0, 6);
 
   return (
-    <section ref={sectionRef} id="projects" className="section">
+    <section ref={sectionRef} id="projects" className="section section-projects">
       <div className="container-custom">
         {/* Header */}
         <div ref={headerRef} className="max-w-3xl mb-16">
@@ -71,78 +69,52 @@ export default function Projects() {
 
         {/* Projects Grid */}
         <div ref={gridRef} className="grid-minimal mb-12">
-          {displayProjects.map((project) => (
+          {displayProjects.map((project, index) => (
             <article
               key={project.id}
-              className="project-item card-minimal group"
+              className="project-item project-card group"
             >
-              {/* Category */}
-              {project.category && (
-                <div 
-                  className="text-xs uppercase tracking-wider mb-4 font-medium"
-                  style={{ color: "var(--accent)" }}
-                >
-                  {project.category}
+              <div className="project-card-accent" />
+              <div className="project-card-body">
+                <div className="project-card-header">
+                  <span className="project-card-number">0{index + 1}</span>
+                  {project.category && (
+                    <span className="project-card-category">{project.category}</span>
+                  )}
                 </div>
-              )}
 
-              {/* Title */}
-              <h3 
-                className="text-2xl font-semibold mb-3 group-hover:opacity-70 transition-opacity"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {project.title}
-              </h3>
+                <h3 className="project-card-title">
+                  {project.title}
+                </h3>
 
-              {/* Description */}
-              <p 
-                className="mb-6 leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {project.description}
-              </p>
+                <p className="project-card-description">
+                  {project.description}
+                </p>
 
-              {/* Highlights */}
-              {project.highlights && project.highlights.length > 0 && (
-                <ul className="mb-6 space-y-2">
-                  {project.highlights.slice(0, 3).map((highlight, idx) => (
-                    <li 
-                      key={idx}
-                      className="text-sm flex items-start gap-2"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      <span style={{ color: "var(--accent)" }}>•</span>
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {project.highlights && project.highlights.length > 0 && (
+                  <ul className="project-card-highlights">
+                    {project.highlights.slice(0, 2).map((highlight, idx) => (
+                      <li key={idx}>
+                        <span className="project-card-bullet" aria-hidden="true" />
+                        {highlight}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="project-card-tags">
                 {project.tags.slice(0, 5).map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1 rounded-full border"
-                    style={{
-                      borderColor: "var(--border-color)",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    {tag}
-                  </span>
+                  <span key={tag}>{tag}</span>
                 ))}
               </div>
 
-              {/* Links */}
-              <div className="flex items-center gap-4 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
+              <div className="project-card-actions">
                 {project.github && (
                   <a
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm hover-underline transition-opacity hover:opacity-70"
-                    style={{ color: "var(--text-primary)" }}
+                    className="project-card-link"
                   >
                     <Github size={16} />
                     Code
@@ -153,13 +125,14 @@ export default function Projects() {
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm hover-underline transition-opacity hover:opacity-70"
-                    style={{ color: "var(--text-primary)" }}
+                    className="project-card-link project-card-link-primary"
                   >
                     <ExternalLink size={16} />
-                    Live Demo
+                    Live demo
+                    <ArrowUpRight size={14} />
                   </a>
                 )}
+              </div>
               </div>
             </article>
           ))}

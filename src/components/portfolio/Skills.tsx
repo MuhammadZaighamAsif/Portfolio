@@ -22,7 +22,6 @@ export default function Skills() {
           toggleActions: "play none none reverse",
         },
         y: 40,
-        opacity: 0,
         duration: 0.8,
         ease: "power3.out",
       });
@@ -37,7 +36,6 @@ export default function Skills() {
             toggleActions: "play none none reverse",
           },
           y: 50,
-          opacity: 0,
           stagger: 0.1,
           duration: 0.8,
           ease: "power3.out",
@@ -49,7 +47,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="skills" className="section">
+    <section ref={sectionRef} id="skills" className="section section-skills">
       <div className="container-custom">
         {/* Header */}
         <div ref={headerRef} className="max-w-3xl mb-16">
@@ -84,7 +82,7 @@ export default function Skills() {
                 {group.items.map((skill) => (
                   <span
                     key={skill}
-                    className="px-3 py-1.5 text-sm border rounded-full transition-colors hover:bg-current hover:text-primary"
+                    className="skill-chip px-3 py-1.5 text-sm border rounded-full transition-colors"
                     style={{
                       borderColor: "var(--border-color)",
                       color: "var(--text-secondary)",

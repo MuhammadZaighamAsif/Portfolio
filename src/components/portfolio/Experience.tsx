@@ -47,7 +47,6 @@ export default function Experience() {
           toggleActions: "play none none reverse",
         },
         y: 40,
-        opacity: 0,
         duration: 0.8,
         ease: "power3.out",
       });
@@ -61,7 +60,6 @@ export default function Experience() {
             toggleActions: "play none none reverse",
           },
           y: 50,
-          opacity: 0,
           stagger: 0.1,
           duration: 0.8,
           ease: "power3.out",
@@ -74,7 +72,7 @@ export default function Experience() {
 
   return (
     <>
-      <section ref={sectionRef} id="experience" className="section">
+      <section ref={sectionRef} id="experience" className="section section-experience">
         <div className="container-custom">
           {/* Header */}
           <div ref={headerRef} className="max-w-3xl mb-16">
@@ -157,7 +155,7 @@ export default function Experience() {
                   <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
                       onClick={() => openModal('/developers_hub_completion_cert.pdf')}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
                       style={{
                         borderColor: "var(--border-color)",
                         color: "var(--text-primary)",
@@ -168,7 +166,7 @@ export default function Experience() {
                     </button>
                     <button
                       onClick={() => openModal('/dev_hub_offer_letter.pdf')}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
                       style={{
                         borderColor: "var(--border-color)",
                         color: "var(--text-primary)",
@@ -183,7 +181,7 @@ export default function Experience() {
                   <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
                       onClick={() => openModal('/quantum_logics_offer_letter.pdf')}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
                       style={{
                         borderColor: "var(--border-color)",
                         color: "var(--text-primary)",
@@ -198,7 +196,7 @@ export default function Experience() {
                   <div className="flex flex-wrap gap-3 pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                     <button
                       onClick={() => openModal('/ess-offer-letter.png')}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all hover:bg-current"
+                      className="document-button inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full transition-all"
                       style={{
                         borderColor: "var(--border-color)",
                         color: "var(--text-primary)",

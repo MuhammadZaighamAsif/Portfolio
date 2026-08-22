@@ -22,7 +22,6 @@ export default function Certificates() {
           toggleActions: "play none none reverse",
         },
         y: 40,
-        opacity: 0,
         duration: 0.8,
         ease: "power3.out",
       });
@@ -36,7 +35,6 @@ export default function Certificates() {
             toggleActions: "play none none reverse",
           },
           y: 50,
-          opacity: 0,
           stagger: 0.08,
           duration: 0.8,
           ease: "power3.out",
@@ -48,7 +46,7 @@ export default function Certificates() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="certificates" className="section">
+    <section ref={sectionRef} id="certificates" className="section section-certificates">
       <div className="container-custom">
         {/* Header */}
         <div ref={headerRef} className="max-w-3xl mb-16">

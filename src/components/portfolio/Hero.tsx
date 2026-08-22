@@ -133,10 +133,12 @@ export default function Hero() {
           {/* Name with falling letters effect */}
           <h1
             ref={nameRef}
-            className="text-display mb-6 leading-none font-bold"
+            className="text-display mb-6 leading-none font-bold whitespace-nowrap"
             style={{ 
               minHeight: "1.2em",
-              color: "var(--text-primary)"
+              color: "var(--text-primary)",
+              fontSize: "clamp(1.6rem, 7.5vw, 5rem)",
+              letterSpacing: "-0.04em",
             }}
           >
             {meta.name}
@@ -151,11 +153,16 @@ export default function Hero() {
             {meta.title}
           </div>
 
+          {/* <div className="hero-capabilities" aria-label="Frontend and motion capabilities">
+            <span><strong>React</strong> interface systems</span>
+            <span><strong>GSAP</strong> motion direction</span>
+          </div> */}
+
           {/* Subtitle */}
           <p
             ref={subtitleRef}
-            className="text-body-large max-w-2xl mx-auto mb-12"
-            style={{ color: "var(--text-secondary)" }}
+              className="text-body-large max-w-3xl mx-auto mb-12 text-left"
+              style={{ color: "var(--text-secondary)", lineHeight: 1.75 }}
           >
             {meta.subtitle}
           </p>
@@ -202,8 +209,6 @@ export default function Hero() {
               <span>Get in Touch</span>
             </button>
             <a
-              href="/resume.pdf"
-              download="Zaigham_Resume.pdf"
               className="inline-flex items-center gap-2 px-6 py-3 border font-medium transition-all hover:border-opacity-70"
               style={{
                 borderColor: "var(--border-color)",
@@ -222,7 +227,7 @@ export default function Hero() {
               href={meta.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all hover:bg-current hover:text-primary group"
+              className="hero-social-link w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all group"
               style={{ color: "var(--text-secondary)" }}
               aria-label="GitHub"
             >
@@ -232,7 +237,7 @@ export default function Hero() {
               href={meta.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all hover:bg-current hover:text-primary group"
+              className="hero-social-link w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all group"
               style={{ color: "var(--text-secondary)" }}
               aria-label="LinkedIn"
             >

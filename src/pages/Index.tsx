@@ -13,7 +13,7 @@ const Index = () => {
   const { theme, toggle } = useTheme();
 //function
   return (
-    <div style={{ backgroundColor: "var(--color-surface)", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-primary)", minHeight: "100vh" }}>
       <Navbar theme={theme} onToggle={toggle} />
       <main>
         <Hero />

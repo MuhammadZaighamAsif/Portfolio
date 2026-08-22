@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { meta } from "@/data/portfolio";
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -119,7 +118,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         background: "var(--bg-primary)",
       }}
     >
-      {/* Acid squares background */}
       <div ref={squaresRef} className="absolute inset-0">
         {generateSquares()}
       </div>
@@ -146,19 +144,13 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               MZA
             </span>
           </div>
-          <p
-            className="text-sm font-semibold tracking-[0.24em] uppercase"
-            style={{ color: "var(--text-primary)" }}
-          >
-            {meta.name}
-          </p>
         </div>
 
         {/* Progress bar container */}
         <div className="w-56 mx-auto">
           {/* Progress bar background */}
           <div
-            className="relative h-2 mb-3 overflow-hidden"
+            className="relative h-1 mb-3 overflow-hidden"
             style={{ background: "var(--border-color)" }}
           >
             {/* Animated progress */}
@@ -167,7 +159,6 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               style={{
                 width: `${progress}%`,
                 background: "var(--accent)",
-                transition: "width 120ms linear",
               }}
             />
             {/* Shimmer effect */}
@@ -182,7 +173,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           </div>
 
           {/* Progress percentage */}
-          <div className="flex items-center justify-between text-xs" aria-live="polite">
+          <div className="flex items-center justify-between text-xs">
             <span
               className="font-medium tracking-wider"
               style={{ color: "var(--text-secondary)" }}

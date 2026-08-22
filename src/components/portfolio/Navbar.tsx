@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, FileDown } from "lucide-react";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import gsap from "gsap";
 
@@ -88,10 +88,20 @@ export default function Navbar({ theme, onToggle }: NavbarProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-4">
+              <a
+                href="/resume.pdf"
+                download="Zaigham_Resume.pdf"
+                className="hidden sm:inline-flex items-center gap-2 text-sm font-medium hover-underline"
+                style={{ color: "var(--text-primary)" }}
+              >
+                <FileDown size={16} />
+                Resume
+              </a>
+
               {/* Theme toggle */}
               <button
                 onClick={onToggle}
-                className="w-9 h-9 flex items-center justify-center rounded-full border border-current transition-all hover:bg-current hover:text-primary"
+                className="theme-toggle w-9 h-9 flex items-center justify-center rounded-full border border-current transition-all"
                 style={{ color: "var(--text-secondary)" }}
                 aria-label="Toggle theme"
               >

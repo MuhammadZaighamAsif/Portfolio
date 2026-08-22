@@ -42,7 +42,7 @@ export default function ProjectsPage() {
   }, [activeTab]);
 
   return (
-    <div style={{ backgroundColor: "var(--color-surface)", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--bg-primary)", minHeight: "100vh" }}>
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-20">
         <div className="mb-8 flex items-center justify-between gap-4">
           <Link

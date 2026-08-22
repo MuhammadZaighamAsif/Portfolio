@@ -11,11 +11,9 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const handleSplashComplete = () => {
     setShowSplash(false);
-    setTimeout(() => setIsLoaded(true), 300);
   };
 
   return (
@@ -26,13 +24,11 @@ const App = () => {
         
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
         
-        <div
-          className={`transition-opacity duration-500 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
-        >
+        {!showSplash && (
+          <div className="animate-in fade-in duration-500">
           <RouterProvider router={router} />
-        </div>
+          </div>
+        )}
       </TooltipProvider>
     </QueryClientProvider>
   );
