@@ -9,6 +9,12 @@ if (!container) {
   throw new Error("Root container #root was not found.");
 }
 
-bootstrapGeneratedSiteAnalytics();
+// bootstrapGeneratedSiteAnalytics();
 
-createRoot(container).render(<App />);
+// createRoot(container).render(<App />);
+ try {
+   bootstrapGeneratedSiteAnalytics();
+ } catch (err) {
+   console.error("Analytics bootstrap failed (non-fatal):", err);
+ }
+ createRoot(container).render(<App />);
