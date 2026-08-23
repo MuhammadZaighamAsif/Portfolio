@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://muhammadzaighamasif.vercel.app/sitemap.xml
