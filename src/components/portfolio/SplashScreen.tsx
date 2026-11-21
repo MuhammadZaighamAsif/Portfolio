@@ -11,11 +11,21 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const squaresRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Keep the latest callback without restarting the animation when the parent re-renders.
+  const onCompleteRef = useRef(onComplete);
   useEffect(() => {
-    // Animate squares
-    const squares = squaresRef.current?.querySelectorAll(".acid-square");
-    if (squares) {
-      squares.forEach((square, i) => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    const squaresEl = squaresRef.current;
+    const contentEl = contentRef.current;
+    const containerEl = containerRef.current;
+
+    const ctx = gsap.context(() => {
+      // Animate squares
+      const squares = squaresEl?.querySelectorAll(".acid-square");
+      squares?.forEach((square, i) => {
         gsap.to(square, {
           rotation: 360,
           scale: gsap.utils.random(0.5, 1.5),
@@ -28,54 +38,72 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           delay: i * 0.1,
         });
       });
-    }
 
-    // Content entrance
-    gsap.from(contentRef.current, {
-      scale: 0.9,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power2.out",
-      delay: 0.2,
+      // Content entrance
+      gsap.from(contentEl, {
+        scale: 0.9,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        delay: 0.2,
+      });
     });
 
     // Progress animation
     const duration = 2500;
-    const startTime = Date.now();
+    let frame = 0;
+    let startTimer = 0;
+    let finished = false;
+    let startTime = 0;
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      gsap.to(squaresEl, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.6,
+        ease: "back.in(1.5)",
+      });
+      gsap.to(contentEl, {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in",
+      });
+      gsap.to(containerEl, {
+        opacity: 0,
+        duration: 0.4,
+        delay: 0.3,
+        onComplete: () => onCompleteRef.current(),
+      });
+    };
+
+    const animate = (now: number) => {
+      if (startTime === 0) startTime = now;
+      const elapsed = now - startTime;
       const newProgress = Math.min((elapsed / duration) * 100, 100);
-      
+
       setProgress(Math.floor(newProgress));
 
       if (newProgress < 100) {
-        requestAnimationFrame(animate);
+        frame = requestAnimationFrame(animate);
       } else {
-        // Exit animation
-        gsap.to(squaresRef.current, {
-          scale: 0,
-          opacity: 0,
-          duration: 0.6,
-          ease: "back.in(1.5)",
-        });
-        gsap.to(contentRef.current, {
-          scale: 0.8,
-          opacity: 0,
-          duration: 0.5,
-          ease: "power2.in",
-        });
-        gsap.to(containerRef.current, {
-          opacity: 0,
-          duration: 0.4,
-          delay: 0.3,
-          onComplete,
-        });
+        finish();
       }
     };
 
-    setTimeout(animate, 300);
-  }, [onComplete]);
+    startTimer = window.setTimeout(() => {
+      frame = requestAnimationFrame(animate);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      cancelAnimationFrame(frame);
+      ctx.revert();
+      gsap.killTweensOf([squaresEl, contentEl, containerEl]);
+    };
+  }, []);
 
   // Generate acid squares
   const generateSquares = () => {
@@ -113,6 +141,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   return (
     <div
       ref={containerRef}
+      role="status"
+      aria-live="polite"
+      aria-label="Loading portfolio"
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
       style={{
         background: "var(--bg-primary)",

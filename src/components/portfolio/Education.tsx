@@ -4,6 +4,7 @@ import { education } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ReactBitsText from "@/components/ui/ReactBitsText";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,28 +14,32 @@ export default function Education() {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const title = headerRef.current?.querySelector("h2");
       const description = headerRef.current?.querySelector("p:last-child");
 
       // Academic title settles into place
-      gsap.from(title, {
-        scrollTrigger: {
-          trigger: headerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-        y: -22,
-        rotation: 1.5,
-        duration: 0.8,
-        ease: "power3.out",
-      });
-      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 16, duration: 0.7, delay: 0.15, ease: "power2.out" });
+      if (title) {
+        gsap.from(title, {
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          y: -22,
+          rotation: 1.5,
+          duration: 0.8,
+          ease: "power3.out",
+        });
+      }
+      if (description) {
+        gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 16, duration: 0.7, delay: 0.15, ease: "power2.out" });
+      }
 
       const items = gridRef.current?.querySelectorAll(".education-item");
-      if (items) {
+      if (items && items.length > 0) {
         gsap.from(items, {
           scrollTrigger: {
             trigger: gridRef.current,

@@ -1,261 +1,100 @@
 <div align="center">
 
-# 🌐 Muhammad Zaigham Asif — Developer Portfolio
+# Muhammad Zaigham Asif — Developer Portfolio
 
-A modern, responsive, and high-performance portfolio website built to showcase my projects, technical skills, certifications, and professional journey.
+A fast, accessible, responsive portfolio built with React, TypeScript and Vite.
 
-<p align="center">
-<a href="https://muhammadzaighamasif.vercel.app/"><strong>Live Demo</strong></a>
-</p>
+[**Live site**](https://muhammadzaighamasif.vercel.app/)
+
+<a href="https://muhammadzaighamasif.vercel.app/">
+  <img src="./public/preview.png" alt="Portfolio preview" width="100%">
+</a>
+
 </div>
 
 ---
 
-# 📖 About
+## Features
 
-Welcome to my personal developer portfolio!
+- Responsive layout with light / dark themes (follows system preference, remembers choice, no flash on load)
+- Sections for skills, projects, experience, education, certificates and a contact form
+- Dedicated `/projects` page with category filtering (lazy-loaded)
+- In-page document viewer for offer letters and certificates
+- Contact form delivered through EmailJS (with a honeypot against bots)
+- GSAP scroll/entrance animations that respect `prefers-reduced-motion`
+- Accessibility: skip link, visible keyboard focus, labelled controls, dialog semantics, ARIA state on the mobile menu
+- SEO: Open Graph / Twitter cards, JSON-LD structured data, sitemap and robots.txt
 
-This portfolio highlights my software engineering journey, featured projects, technical expertise, certifications, and ways to connect with me. It is designed with performance, responsiveness, and modern UI/UX principles in mind.
+## Tech stack
 
----
+| Area | Tools |
+| --- | --- |
+| Framework | React 19, TypeScript, React Router 7 |
+| Build | Vite 7 |
+| Styling | Tailwind CSS 3 + CSS custom properties |
+| Motion | GSAP + ScrollTrigger |
+| Forms / email | EmailJS |
+| Hosting | Vercel |
 
-# 📸 Preview
+## Getting started
 
-<p align="center">
-  <a href="https://muhammadzaighamasif.vercel.app/">
-    <img src="./public/preview.png" alt="Portfolio Preview" width="100%">
-  </a>
-</p>
-
----
-
-# ✨ Features
-
-- 🎨 Modern & Clean UI
-- 📱 Fully Responsive Design
-- ⚡ Fast Performance with Vite
-- 💻 Project Showcase
-- 👨‍💻 Skills Section
-- 🎓 Education & Certifications
-- 💼 Experience Timeline
-- 📬 Contact Section
-- 🌙 Dark Mode Support 
-- 🚀 SEO Friendly
-
----
-
-# 🛠 Tech Stack
-
-### Frontend
-
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-
-### Languages
-
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- TypeScript
-
-### Tools
-
-- Git
-- GitHub
-- VS Code
-- npm
-
-### Deployment
-
-- Vercel
-
----
----
-
-# 🚀 Installation
-
-## Clone the repository
+Requires **Node.js 20.19+** and npm.
 
 ```bash
 git clone https://github.com/MuhammadZaighamAsif/Portfolio.git
-```
-
-## Navigate to the project
-
-```bash
 cd Portfolio
-```
-
-## Install dependencies
-
-```bash
 npm install
-```
-
-## Start development server
-
-```bash
+cp .env.example .env     # then fill in the values (see below)
 npm run dev
 ```
 
-## Build for production
+### Environment variables
 
-```bash
-npm run build
-```
+| Variable | Purpose |
+| --- | --- |
+| `VITE_EMAILJS_SERVICE_ID` | EmailJS service ID |
+| `VITE_EMAILJS_TEMPLATE_ID` | EmailJS template ID |
+| `VITE_EMAILJS_PUBLIC_KEY` | EmailJS public key |
+| `VITE_ENTER_ANALYTICS_*` | Optional analytics configuration |
 
-## Preview production build
+If the EmailJS variables are missing, the contact form shows a friendly message pointing visitors to the email address instead of failing silently. The template should use these parameters: `user_name`, `user_email`, `subject`, `message`.
 
-```bash
-npm run preview
-```
+> `VITE_*` values are embedded in the client bundle. EmailJS public keys are designed for that, but never put private secrets in these variables.
 
----
-
-# 💻 Available Scripts
+## Scripts
 
 | Command | Description |
-|----------|-------------|
-| `npm run dev` | Starts development server |
-| `npm run build` | Builds production version |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Runs ESLint |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Type-check, then create a production build in `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run ESLint (type-aware) |
+| `npm run typecheck` | Run the TypeScript compiler without emitting |
+| `npm run check` | Lint + type-check (run this before committing) |
 
----
+## Project structure
 
-# 🚀 Performance Goals
-
-- Fast Loading
-- Responsive Layout
-- Clean Code
-- Optimized Assets
-- Reusable Components
-- Accessibility Friendly
-
----
-
-# 🤝 Contributing
-
-Contributions, suggestions, and improvements are always welcome.
-
-1. Fork the repository.
-2. Create your feature branch.
-
-```bash
-git checkout -b feature/new-feature
+```
+src/
+  components/
+    portfolio/   Page sections (Hero, Skills, Projects, Experience, ...)
+    ui/          Shared UI primitives (toasts, tooltip, text effects)
+  data/          All site content (typed) — edit portfolio.ts to update copy
+  hooks/         useTheme, useScrollSpy, usePageMeta, toast
+  lib/           Small utilities (motion helpers, achievement toast)
+  pages/         Route components (Index, ProjectsPage, NotFound, RouteError)
+  router.tsx     Route table (the projects page is code-split)
+public/          Static assets: resume, documents, favicon, robots.txt, sitemap.xml
 ```
 
-3. Commit your changes.
+## Updating content
 
-```bash
-git commit -m "Add new feature"
-```
+Everything shown on the site (bio, skills, projects, experience, education, certificates) lives in [`src/data/portfolio.ts`](src/data/portfolio.ts) and is typed, so the compiler catches missing or misspelled fields. Documents shown in the experience viewer are mapped in `src/components/portfolio/Experience.tsx`.
 
-4. Push to your branch.
+## Deployment
 
-```bash
-git push origin feature/new-feature
-```
+The site is deployed on Vercel. [`vercel.json`](vercel.json) provides the SPA rewrite (so deep links such as `/projects` work on refresh), security headers and long-term caching for hashed assets. Set the `VITE_EMAILJS_*` variables in the Vercel project settings.
 
-5. Open a Pull Request.
+## Contact
 
----
-
-# 📬 Contact
-
-## Muhammad Zaigham Asif
-
-📧 Email: **zaighamasif06@gmail.com**
-
-💼 LinkedIn:
-https://linkedin.com/in/zaigham-asif-5a5499240
-
-🐙 GitHub:
-https://github.com/MuhammadZaighamAsif
-
-🌐 Portfolio:
-https://muhammadzaighamasif.vercel.app/
----
-
-# ⭐ Support
-
-If you found this project useful, please consider giving it a ⭐ on GitHub. Your support is greatly appreciated!
-
----
-
-<div align="center">
-
-### Thank you for visiting!
-
-⭐ **If you like this project, don't forget to leave a star!**
-
-</div>
-
-
----
-
-# 🎨 NEW: UI Redesign 2024
-
-## What's New
-
-Your portfolio has been completely redesigned with modern aesthetics and professional animations!
-
-### ✨ Visual Enhancements
-- **Modern Color Palette** - Indigo (#6366F1), Cyan (#06B6D4), Amber (#F59E0B)
-- **GSAP Animations** - Smooth, professional micro-interactions throughout
-- **Enhanced Glassmorphism** - Beautiful blur effects and depth
-- **Animated Gradients** - Dynamic, shifting color backgrounds
-- **Interactive Elements** - Hover effects, ripples, glows, and 3D transforms
-
-### 🎭 Animation Features
-- **Hero Section** - Staggered entrance, floating badges, ripple buttons
-- **Projects** - ScrollTrigger reveals, card staggers, shimmer effects
-- **Skills** - 3D rotations, icon animations, interactive badges
-- **Navbar** - Smooth scroll, active indicators, mobile menu animations
-
-### 📚 Documentation
-
-New comprehensive guides have been added:
-
-- **[QUICKSTART.md](./QUICKSTART.md)** - Quick setup and running guide
-- **[FEATURES.md](./FEATURES.md)** - Complete list of all features
-- **[UI_REDESIGN_SUMMARY.md](./UI_REDESIGN_SUMMARY.md)** - Design system overview
-- **[VISUAL_CHANGES.md](./VISUAL_CHANGES.md)** - Detailed visual enhancements
-- **[NEXT_STEPS.md](./NEXT_STEPS.md)** - Deployment and launch checklist
-
-### 🚀 New Technologies
-- **GSAP** - Professional animation library
-- **ScrollTrigger** - Scroll-based animations
-- **Enhanced Tailwind** - Custom animations and utilities
-
-### 🎯 Key Improvements
-- ✅ Professional, modern design
-- ✅ Smooth GSAP-powered animations
-- ✅ Enhanced user experience
-- ✅ Better visual hierarchy
-- ✅ Improved accessibility
-- ✅ Optimized performance
-
----
-
-## 📈 Performance Metrics
-
-- **Lighthouse Performance**: 90+
-- **Lighthouse Accessibility**: 95+
-- **First Contentful Paint**: < 1.5s
-- **Bundle Size**: Optimized with code-splitting
-
----
-
-## 🎊 Result
-
-Your portfolio now stands out with:
-- Modern, professional aesthetics
-- Smooth, delightful animations
-- Enhanced user engagement
-- Better brand presentation
-- Portfolio-ready for job applications
-
-**Welcome to your redesigned portfolio! 🚀**
+**Muhammad Zaigham Asif** — [zaighamasif06@gmail.com](mailto:zaighamasif06@gmail.com) · [LinkedIn](https://linkedin.com/in/zaigham-asif-5a5499240) · [GitHub](https://github.com/MuhammadZaighamAsif)

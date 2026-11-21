@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, ChevronRight, ExternalLink, Github, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-import { projects } from "@/data/portfolio";
+import { projects, type Project } from "@/data/portfolio";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const tabs = ["All", "Featured", "Full Stack", "AI", "Client Work"] as const;
 type Tab = (typeof tabs)[number];
 
-const getProjectCategory = (project: (typeof projects)[number]) => {
+const getProjectCategory = (project: Project) => {
   if (project.categories && project.categories.length > 0) {
     return project.categories[0];
   }
@@ -29,8 +30,10 @@ const getProjectCategory = (project: (typeof projects)[number]) => {
 
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
+  usePageMeta({ title: "All Projects — Muhammad Zaigham Asif" });
 
-  const highlightedProject = projects.find((project) => project.categories?.includes("Client Work")) ?? projects[0];
+  const highlightedProject: Project | undefined =
+    projects.find((project) => project.categories?.includes("Client Work")) ?? projects[0];
 
   const filteredProjects = useMemo(() => {
     if (activeTab === "All") return projects;
@@ -59,65 +62,74 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <div className="project-spotlight-shell mb-8 overflow-hidden rounded-3xl border border-border bg-surface-raised">
-          <div className="project-spotlight-glow" />
-          <div className="bg-gradient-primary px-6 py-4">
-            <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/90">
-              <Sparkles size={14} />
-              Featured project
+        {highlightedProject && (
+          <div className="project-spotlight-shell mb-8 overflow-hidden rounded-3xl border border-border bg-surface-raised">
+            <div className="project-spotlight-glow" />
+            <div className="bg-gradient-primary px-6 py-4">
+              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/90">
+                <Sparkles size={14} />
+                Featured project
+              </div>
             </div>
-          </div>
-          <div className="p-6 md:p-8">
-            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
-              <div>
-                <span className="featured-badge inline-block mb-3">Highlight</span>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground-default">{highlightedProject.title}</h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground-subtle">{highlightedProject.description}</p>
+            <div className="p-6 md:p-8">
+              <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
+                <div>
+                  <span className="featured-badge inline-block mb-3">Highlight</span>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground-default">{highlightedProject.title}</h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground-subtle">{highlightedProject.description}</p>
 
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {highlightedProject.live && (
-                    <a
-                      href={highlightedProject.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-product-cta inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
-                    >
-                      Live demo
-                      <ExternalLink size={14} />
-                    </a>
-                  )}
-                  {highlightedProject.github && (
-                    <a
-                      href={highlightedProject.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-5 py-3 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
-                    >
-                      GitHub
-                      <Github size={14} />
-                    </a>
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    {highlightedProject.live && (
+                      <a
+                        href={highlightedProject.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="project-product-cta inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                        aria-label={`${highlightedProject.title} — live demo (opens in a new tab)`}
+                      >
+                        Live demo
+                        <ExternalLink size={14} />
+                      </a>
+                    )}
+                    {highlightedProject.github && (
+                      <a
+                        href={highlightedProject.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-5 py-3 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
+                      >
+                        GitHub
+                        <Github size={14} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <div className="project-spotlight-thumb relative overflow-hidden rounded-2xl border border-border bg-surface">
+                  <div className="project-spotlight-glow-secondary" />
+                  {highlightedProject.thumbnail ? (
+                    <img
+                      src={highlightedProject.thumbnail}
+                      alt={`${highlightedProject.title} homepage screenshot`}
+                      decoding="async"
+                      className="h-52 w-full object-cover md:h-64"
+                    />
+                  ) : (
+                    <div className="h-52 w-full md:h-64" aria-hidden="true" />
                   )}
                 </div>
               </div>
-
-              <div className="project-spotlight-thumb relative overflow-hidden rounded-2xl border border-border bg-surface">
-                <div className="project-spotlight-glow-secondary" />
-                <img
-                  src={highlightedProject.thumbnail || "https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1200&q=80"}
-                  alt={highlightedProject.title}
-                  className="h-52 w-full object-cover md:h-64"
-                />
-              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <div className="mb-8 flex flex-wrap gap-3">
+        <div className="mb-8 flex flex-wrap gap-3" role="group" aria-label="Filter projects by category">
           {tabs.map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
+              aria-pressed={activeTab === tab}
               className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                 activeTab === tab
                   ? "border-transparent bg-gradient-primary text-white shadow-glow-primary"

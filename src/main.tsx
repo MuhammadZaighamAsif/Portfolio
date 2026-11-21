@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { bootstrapGeneratedSiteAnalytics } from "./analytics.ts";
 import App from "./App.tsx";
@@ -9,12 +10,15 @@ if (!container) {
   throw new Error("Root container #root was not found.");
 }
 
-// bootstrapGeneratedSiteAnalytics();
+// Analytics must never prevent the site from rendering.
+try {
+  bootstrapGeneratedSiteAnalytics();
+} catch (err) {
+  console.error("Analytics bootstrap failed (non-fatal):", err);
+}
 
-// createRoot(container).render(<App />);
- try {
-   bootstrapGeneratedSiteAnalytics();
- } catch (err) {
-   console.error("Analytics bootstrap failed (non-fatal):", err);
- }
- createRoot(container).render(<App />);
+createRoot(container).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

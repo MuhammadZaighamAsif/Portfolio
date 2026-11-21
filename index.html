@@ -5,9 +5,7 @@
   <meta charset="UTF-8" />
 
   <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" href="/favicon.ico" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -27,7 +25,9 @@
 
   <meta name="geo.region" content="PK" />
   <meta name="geo.placename" content="Lahore, Pakistan" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta name="color-scheme" content="light dark" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="profile" />
@@ -35,7 +35,9 @@
   <meta property="og:description" content="Portfolio of Muhammad Zaigham Asif — Software Engineer, Full-Stack Developer, and AI/ML developer based in Lahore, Pakistan." />
   <meta property="og:url" content="https://muhammadzaighamasif.vercel.app/" />
   <meta property="og:site_name" content="Muhammad Zaigham Asif" />
-  <meta property="og:image" content="https://muhammadzaighamasif.vercel.app/og-image.png" />
+  <meta property="og:image" content="https://muhammadzaighamasif.vercel.app/preview.png" />
+  <meta property="og:image:width" content="1890" />
+  <meta property="og:image:height" content="867" />
   <meta property="og:image:alt" content="Muhammad Zaigham Asif - Software Engineer" />
   <meta property="og:locale" content="en_US" />
 
@@ -43,10 +45,35 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Muhammad Zaigham Asif | Software Engineer & Full-Stack Developer" />
   <meta name="twitter:description" content="Portfolio of Muhammad Zaigham Asif — Software Engineer, Full-Stack Developer, and AI/ML developer." />
-  <meta name="twitter:image" content="https://muhammadzaighamasif.vercel.app/og-image.png" />
+  <meta name="twitter:image" content="https://muhammadzaighamasif.vercel.app/preview.png" />
+  <meta name="twitter:image:alt" content="Muhammad Zaigham Asif - Software Engineer" />
 
+  <!-- Fonts (only the weights the site uses) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+  />
+
+  <!-- Apply the saved/system theme before first paint to avoid a flash of the wrong theme -->
+  <script>
+    (function () {
+      var theme = "light";
+      try {
+        var stored = localStorage.getItem("portfolio-theme");
+        if (stored === "dark" || stored === "light") theme = stored;
+        else if (window.matchMedia("(prefers-color-scheme: dark)").matches) theme = "dark";
+      } catch (e) {
+        /* storage unavailable (private mode) — fall back to light */
+      }
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    html { background: #ffffff; }
+    html[data-theme="dark"] { background: #000000; }
+  </style>
 
   <!-- Structured Data: Person -->
   <script type="application/ld+json">
@@ -57,7 +84,6 @@
       "name": "Muhammad Zaigham Asif",
       "alternateName": ["Zaigham Asif", "Muhammad Zaigham", "Zaigham"],
       "url": "https://muhammadzaighamasif.vercel.app/",
-      "image": "https://muhammadzaighamasif.vercel.app/profile.jpg",
       "jobTitle": "Software Engineer",
       "description": "Muhammad Zaigham Asif is a Software Engineer and Full-Stack Developer specializing in React, Node.js, AI/ML, and full-stack web development.",
       "alumniOf": {
@@ -95,6 +121,9 @@
 </head>
 
 <body>
+  <noscript>
+    This portfolio needs JavaScript to run. Contact: zaighamasif06@gmail.com
+  </noscript>
   <div id="root"></div>
   <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
   <script type="module" src="/src/main.tsx"></script>

@@ -1,3 +1,50 @@
+export type ProjectCategory = "Client Work" | "Full Stack" | "AI";
+
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  /** Empty string when there is no public repository / deployment. */
+  github: string;
+  live: string;
+  featured: boolean;
+  category?: ProjectCategory;
+  categories?: ProjectCategory[];
+  thumbnail?: string;
+  highlights: string[];
+}
+
+export interface SkillGroup {
+  category: string;
+  items: string[];
+}
+
+export interface ExperienceEntry {
+  role: string;
+  company: string;
+  type: "Internship" | "Academic" | "Full-time";
+  duration: string;
+  bullets: string[];
+}
+
+export interface EducationEntry {
+  degree: string;
+  institution: string;
+  location: string;
+  duration: string;
+  description: string;
+}
+
+export interface Certificate {
+  title: string;
+  issuer: string;
+  platform: string;
+  date: string;
+  /** Empty string when no public verification link exists. */
+  credentialUrl: string;
+}
+
 export const meta = {
   name: "Muhammad Zaigham Asif",
   title: "Software Engineer",
@@ -10,14 +57,14 @@ export const meta = {
   github: "https://github.com/MuhammadZaighamAsif",
 };
 
-export const skills = [
+export const skills: SkillGroup[] = [
   {
     category: "Programming Languages",
-    items: ["C", "C++", "Java", "JavaScript","SQL", "Python", "x86 Assembly"],
+    items: ["C", "C++", "Java", "JavaScript", "SQL", "Python", "x86 Assembly"],
   },
   {
     category: "Backend",
-    items: ["Node.js", "Express.js", "Flask","Django"],
+    items: ["Node.js", "Express.js", "Flask", "Django"],
   },
   {
     category: "AI / Data",
@@ -25,7 +72,7 @@ export const skills = [
   },
   {
     category: "Frontend",
-    items: ["HTML", "CSS","Tailwind CSS", "React.js", "Vite"],
+    items: ["HTML", "CSS", "Tailwind CSS", "React.js", "Vite"],
   },
   {
     category: "Databases",
@@ -33,11 +80,11 @@ export const skills = [
   },
   {
     category: "Tools",
-    items: ["Git", "Linux","GitHub", "VS Code", "Windows Forms"],
+    items: ["Git", "Linux", "GitHub", "VS Code", "Windows Forms"],
   },
 ];
 
-export const projects = [
+export const projects: Project[] = [
   {
     id: 1,
     title: "Agwatto Travel — Umrah Packages Website",
@@ -185,7 +232,7 @@ export const projects = [
   },
 ];
 
-export const experience = [
+export const experience: ExperienceEntry[] = [
   {
     role: "Software Engineer Intern",
     company: "Exper System Solution",
@@ -203,11 +250,10 @@ export const experience = [
     type: "Internship",
     duration: "05/2026 – 08/2026",
     bullets: [
-      "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026). ",
+      "Completed the Quantum Logics Internship Programme (11 May 2026 – 9 Aug 2026).",
       "Served as Project Captain (Jul 2026 – Aug 2026): led 3 teams, coordinated project execution, and enforced community policies",
       "Served as Team Captain (Jul 2026): ran regular meetings, published session recordings, and managed team deliverables",
       "Contributed to QuantumChat and CalculusRuntime projects — implemented data analysis, simulation scripts, and AI integrations",
-      
     ],
   },
   {
@@ -222,7 +268,7 @@ export const experience = [
   },
 ];
 
-export const education = [
+export const education: EducationEntry[] = [
   {
     degree: "BS Software Engineering",
     institution: "FAST-NUCES",
@@ -239,7 +285,7 @@ export const education = [
   },
 ];
 
-export const certificates = [
+export const certificates: Certificate[] = [
   {
     title: "Foundations of Cybersecurity",
     issuer: "Google",

@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ReactBitsText from "@/components/ui/ReactBitsText";
 import DriftWall from "@/components/ui/DriftWall";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,7 +15,7 @@ export default function Certificates() {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const description = headerRef.current?.querySelector("p:last-child");
@@ -24,7 +25,7 @@ export default function Certificates() {
       }
 
       const items = gridRef.current?.querySelectorAll(".cert-item");
-      if (items) {
+      if (items && items.length > 0) {
         gsap.from(items, {
           scrollTrigger: {
             trigger: gridRef.current,
@@ -89,7 +90,7 @@ export default function Certificates() {
                     color: "var(--bg-primary)",
                   }}
                 >
-                  <Award size={18} />
+                  <Award size={18} aria-hidden="true" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
@@ -107,7 +108,7 @@ export default function Certificates() {
               {/* Footer */}
               <div className="certificate-card-footer flex items-center justify-between pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
                 <span className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <Calendar size={14} />
+                  <Calendar size={14} aria-hidden="true" />
                   {cert.date}
                 </span>
                 {cert.credentialUrl && (
@@ -117,8 +118,9 @@ export default function Certificates() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm hover-underline transition-opacity hover:opacity-70"
                     style={{ color: "var(--accent)" }}
+                    aria-label={`Verify ${cert.title} credential (opens in a new tab)`}
                   >
-                    <ExternalLink size={14} />
+                    <ExternalLink size={14} aria-hidden="true" />
                     Verify
                   </a>
                 )}

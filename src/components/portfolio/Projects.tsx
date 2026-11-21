@@ -5,6 +5,7 @@ import { projects } from "@/data/portfolio";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ReactBitsText from "@/components/ui/ReactBitsText";
+import { prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,29 +15,33 @@ export default function Projects() {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const title = headerRef.current?.querySelector("h2");
       const description = headerRef.current?.querySelector("p:last-child");
 
       // Clipped editorial reveal
-      gsap.from(title, {
-        scrollTrigger: {
-          trigger: headerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-        y: 28,
-        clipPath: "inset(0 100% 0 0)",
-        duration: 0.8,
-        ease: "power3.out",
-      });
-      gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, x: -18, duration: 0.7, delay: 0.15, ease: "power2.out" });
+      if (title) {
+        gsap.from(title, {
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          y: 28,
+          clipPath: "inset(0 100% 0 0)",
+          duration: 0.8,
+          ease: "power3.out",
+        });
+      }
+      if (description) {
+        gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, x: -18, duration: 0.7, delay: 0.15, ease: "power2.out" });
+      }
 
       // Cards stagger
       const cards = gridRef.current?.querySelectorAll(".project-item");
-      if (cards) {
+      if (cards && cards.length > 0) {
         gsap.from(cards, {
           scrollTrigger: {
             trigger: gridRef.current,
@@ -81,7 +86,7 @@ export default function Projects() {
               <div className="project-card-accent" />
               <div className="project-card-body">
                 <div className="project-card-header">
-                  <span className="project-card-number">0{index + 1}</span>
+                  <span className="project-card-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                   {project.category && (
                     <span className="project-card-category">{project.category}</span>
                   )}
@@ -119,8 +124,9 @@ export default function Projects() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="project-card-link"
+                    aria-label={`${project.title} — source code on GitHub (opens in a new tab)`}
                   >
-                    <Github size={16} />
+                    <Github size={16} aria-hidden="true" />
                     Code
                   </a>
                 )}
@@ -130,10 +136,11 @@ export default function Projects() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="project-card-link project-card-link-primary"
+                    aria-label={`${project.title} — live demo (opens in a new tab)`}
                   >
-                    <ExternalLink size={16} />
+                    <ExternalLink size={16} aria-hidden="true" />
                     Live demo
-                    <ArrowUpRight size={14} />
+                    <ArrowUpRight size={14} aria-hidden="true" />
                   </a>
                 )}
               </div>
@@ -151,7 +158,7 @@ export default function Projects() {
               style={{ color: "var(--text-primary)" }}
             >
               <span>View all projects</span>
-              <ArrowRight size={20} />
+              <ArrowRight size={20} aria-hidden="true" />
             </Link>
           </div>
         )}
