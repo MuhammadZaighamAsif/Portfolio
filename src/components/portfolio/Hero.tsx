@@ -71,8 +71,8 @@ export default function Hero() {
     show(".hp-stage", { y: 28, scale: 0.94 }, 1.3, 0.22, { ease: EASE.expo });
     tl.fromTo(
       ".hp-frame",
-      { clipPath: "inset(100% 0% 0% 0% round 28px)" },
-      { clipPath: "inset(0% 0% 0% 0% round 28px)", duration: 1.25, ease: EASE.inOut, clearProps: "clipPath" },
+      { clipPath: "inset(100% 0% 0% 0% round 50% 50% 28px 28px / 34% 34% 28px 28px)" },
+      { clipPath: "inset(0% 0% 0% 0% round 50% 50% 28px 28px / 34% 34% 28px 28px)", duration: 1.25, ease: EASE.inOut, clearProps: "clipPath" },
       0.3
     );
     tl.fromTo(".hp-frame img", { scale: 1.22 }, { scale: 1, duration: 1.8, ease: EASE.out, clearProps: "transform" }, 0.3);
@@ -97,10 +97,10 @@ export default function Hero() {
   return (
     <section ref={rootRef} id="hero" className="hero" aria-labelledby="hero-title">
       <div className="hero-bg" aria-hidden="true">
-        <div className="hero-grid" />
-        <div className="hero-blob hero-blob--a" />
-        <div className="hero-blob hero-blob--b" />
-        <div className="hero-blob hero-blob--c" />
+        <div className="hero-aurora" />
+        <div className="hero-beam hero-beam--a" />
+        <div className="hero-beam hero-beam--b" />
+        <div className="hero-dots" />
       </div>
 
       <div className="container-custom hero-inner">

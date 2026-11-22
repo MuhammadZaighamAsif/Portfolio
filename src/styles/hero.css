@@ -15,66 +15,88 @@
   overflow-x: clip;
 }
 
-/* ── Background: drifting blobs + faint grid. Decorative, no layout impact ── */
+/* ── Background: aurora wash + dot matrix + light beams. Decorative, no layout impact ── */
+.hero {
+  --hero-a: color-mix(in srgb, var(--accent) 20%, transparent);
+  --hero-b: color-mix(in srgb, var(--accent-2) 16%, transparent);
+  --hero-dot: color-mix(in srgb, var(--text-tertiary) 55%, transparent);
+}
+[data-theme="dark"] .hero {
+  --hero-a: color-mix(in srgb, var(--accent) 26%, transparent);
+  --hero-b: color-mix(in srgb, var(--accent-2) 20%, transparent);
+  --hero-dot: color-mix(in srgb, var(--text-secondary) 38%, transparent);
+}
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
-  background: var(--gradient-mesh);
+  background:
+    radial-gradient(110% 80% at 88% -8%, var(--hero-a), transparent 58%),
+    radial-gradient(80% 70% at -4% 104%, var(--hero-b), transparent 62%),
+    var(--bg-primary);
 }
 .hero-bg::after {
   /* fade into the next section */
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 30%;
+  height: 26%;
   background: linear-gradient(to bottom, transparent, var(--bg-primary));
 }
-.hero-grid {
+
+/* Dot matrix, strongest behind the portrait, fading out toward the copy */
+.hero-dots {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(var(--border-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-  background-size: 56px 56px;
+  background-image: radial-gradient(circle at center, var(--hero-dot) 1.2px, transparent 1.6px);
+  background-size: 26px 26px;
   opacity: 0.55;
-  -webkit-mask-image: radial-gradient(70% 60% at 50% 38%, #000 10%, transparent 75%);
-  mask-image: radial-gradient(70% 60% at 50% 38%, #000 10%, transparent 75%);
+  -webkit-mask-image: radial-gradient(52% 70% at 78% 42%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(52% 70% at 78% 42%, #000 0%, transparent 78%);
 }
-.hero-blob {
+
+/* Soft aurora disc behind the portrait; the conic wash turns very slowly */
+.hero-aurora {
   position: absolute;
+  top: 50%;
+  right: max(-14vw, -12rem);
+  width: min(70vw, 56rem);
+  aspect-ratio: 1;
+  translate: 0 -54%;
   border-radius: 50%;
-  opacity: 0.55;
-  will-change: translate;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--hero-a) 70deg,
+    var(--hero-b) 160deg,
+    transparent 230deg,
+    var(--hero-a) 300deg,
+    transparent 360deg
+  );
+  filter: blur(54px);
+  opacity: 0.9;
+  animation: hero-aurora 60s linear infinite;
 }
-.hero-blob--a {
-  top: -12%;
-  left: -8%;
-  width: min(46vw, 640px);
-  aspect-ratio: 1;
-  background: radial-gradient(closest-side, var(--accent-soft-strong), transparent);
-  animation: hero-drift-a 22s ease-in-out infinite alternate;
+@keyframes hero-aurora { to { rotate: 360deg; } }
+
+/* Two diagonal light beams sweep slowly across the top */
+.hero-beam {
+  position: absolute;
+  top: -30%;
+  height: 160%;
+  width: 18vw;
+  min-width: 9rem;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 10%, transparent), transparent);
+  rotate: 18deg;
+  filter: blur(6px);
+  opacity: 0.8;
 }
-.hero-blob--b {
-  top: 8%;
-  right: -10%;
-  width: min(40vw, 560px);
-  aspect-ratio: 1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent-2) 22%, transparent), transparent);
-  animation: hero-drift-b 26s ease-in-out infinite alternate;
-}
-.hero-blob--c {
-  bottom: -18%;
-  left: 38%;
-  width: min(42vw, 600px);
-  aspect-ratio: 1;
-  background: radial-gradient(closest-side, var(--accent-soft), transparent);
-  animation: hero-drift-c 30s ease-in-out infinite alternate;
-}
-@keyframes hero-drift-a { to { translate: 9vw 6vh; } }
-@keyframes hero-drift-b { to { translate: -8vw 9vh; } }
-@keyframes hero-drift-c { to { translate: -10vw -7vh; } }
+.hero-beam--a { left: 8%; animation: hero-beam-a 18s ease-in-out infinite alternate; }
+.hero-beam--b { left: 44%; width: 10vw; opacity: 0.55; animation: hero-beam-b 24s ease-in-out infinite alternate; }
+@keyframes hero-beam-a { to { translate: 9vw 0; } }
+@keyframes hero-beam-b { to { translate: -7vw 0; } }
 
 /* ── Layout ── */
 .hero-inner {
@@ -127,6 +149,18 @@
   margin: -0.04em -0.06em -0.16em;
 }
 .hero-word-inner { display: inline-block; will-change: transform; }
+/* Surname picks up the brand gradient */
+.hero-name > span:nth-child(n + 2) .hero-word-inner {
+  background: var(--gradient-accent);
+  background-size: 140% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* paint area must include the descenders (g), or the clip cuts them off */
+  padding: 0.02em 0.06em 0.18em;
+  margin: -0.02em -0.06em -0.18em;
+}
 
 /* ── Role line + rotating phrase ── */
 .hero-role {
@@ -213,23 +247,41 @@
 .hero-meta-list a { overflow-wrap: anywhere; transition: color 0.25s var(--ease-out); }
 .hero-meta-list a:hover { color: var(--accent); }
 
-/* ── Stats strip ── */
+/* ── Stats: one glass panel, hairline dividers ── */
 .hero-stats {
   margin: clamp(2rem, 4vw, 2.75rem) 0 0;
-  padding: 1.5rem 0 0;
+  padding: 0;
   list-style: none;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.35rem 1rem;
-  border-top: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 @media (min-width: 560px) {
   .hero-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.hero-stat { display: flex; flex-direction: column; gap: 0.15rem; }
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1.05rem 1.2rem;
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+}
+.hero-stat:nth-child(-n + 2) { border-top: 0; }
+.hero-stat:nth-child(odd) { border-left: 0; }
+@media (min-width: 560px) {
+  .hero-stat, .hero-stat:nth-child(odd) { border-top: 0; border-left: 1px solid var(--border-color); }
+  .hero-stat:first-child { border-left: 0; }
+}
 .hero-stat-value {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 3.6vw, 2.5rem);
+  font-size: clamp(1.7rem, 3.2vw, 2.2rem);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -237,7 +289,7 @@
   color: var(--text-primary);
 }
 .hero-stat-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-tertiary);
   letter-spacing: 0.01em;
@@ -347,16 +399,28 @@
 .hp-tilt { position: relative; }
 
 .hp-ring {
+  position: relative;
   padding: 3px;
-  border-radius: calc(1.75rem + 3px);
+  /* Arch: fully round shoulders on top, soft corners below */
+  border-radius: 50% 50% calc(1.75rem + 3px) calc(1.75rem + 3px) / 34% 34% calc(1.75rem + 3px) calc(1.75rem + 3px);
   background: var(--gradient-accent);
   box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-color);
+}
+/* Offset outline echoing the arch behind the photo */
+.hp-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  translate: 16px 16px;
+  border-radius: inherit;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 52%, transparent);
 }
 .hp-frame {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  border-radius: 1.75rem;
+  border-radius: 50% 50% 1.75rem 1.75rem / 34% 34% 1.75rem 1.75rem;
   background: var(--surface);
   /* neutralises sub-pixel seams between ring and photo */
   isolation: isolate;
@@ -365,7 +429,7 @@
 .hp-frame img { display: block; width: 100%; height: 100%; }
 .hp-frame img {
   object-fit: cover;
-  object-position: 50% 18%;
+  object-position: 50% 14%;
   will-change: transform;
 }
 .hp-scrim {
@@ -373,11 +437,48 @@
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(to top, color-mix(in srgb, var(--accent-strong) 34%, transparent) 0%, transparent 34%),
-    linear-gradient(155deg, var(--accent-soft) 0%, transparent 45%);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 35%, transparent);
+    linear-gradient(to top, color-mix(in srgb, var(--accent-strong) 38%, transparent) 0%, transparent 30%),
+    linear-gradient(160deg, var(--accent-soft) 0%, transparent 40%);
   border-radius: inherit;
 }
+
+/* Orbit: a dashed ring with tech nodes circling behind the portrait */
+.hp-orbit {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: 136%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+  animation: hp-orbit 70s linear infinite;
+}
+.hp-orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 34%, var(--border-color));
+}
+.hp-orbit-node {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  margin: -1.35rem 0 0 -1.35rem;
+  border-radius: 50%;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  animation: hp-orbit 70s linear infinite reverse; /* keeps the icon upright */
+}
+@keyframes hp-orbit { to { rotate: 360deg; } }
+@media (max-width: 1023px) { .hp-orbit { width: 118%; } }
+@media (max-width: 479px) { .hp-orbit-node { width: 2.2rem; height: 2.2rem; margin: -1.1rem 0 0 -1.1rem; } }
 
 /* Floating info chips. They float with `translate`; GSAP only animates their intro. */
 .hp-chip {
@@ -428,6 +529,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-blob, .hp-float, .hp-chip, .hp-glow::before, .hero-cue-mouse::after { animation: none; }
+  .hero-aurora, .hero-beam, .hp-orbit, .hp-orbit-node, .hp-float, .hp-chip, .hp-glow::before, .hero-cue-mouse::after { animation: none; }
   .hero-cue-mouse::after { opacity: 1; }
 }

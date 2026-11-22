@@ -60,3 +60,15 @@ export function hostOf(url: string): string {
 }
 
 export const pad = (n: number) => String(n).padStart(2, "0");
+
+export interface ProjectStatus {
+  label: string;
+  tone: "live" | "open" | "private";
+}
+
+/** Derived from the links a project has: deployed, source on GitHub, or neither. */
+export function getProjectStatus(project: Project): ProjectStatus {
+  if (project.live) return { label: "Live", tone: "live" };
+  if (project.github) return { label: "Open source", tone: "open" };
+  return { label: "Private", tone: "private" };
+}

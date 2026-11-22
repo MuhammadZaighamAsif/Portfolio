@@ -3,13 +3,15 @@ import type { CSSProperties } from "react";
 import type { Project } from "@/data/portfolio";
 import BrowserFrame from "./BrowserFrame";
 import ProjectLinks from "./ProjectLinks";
-import { getProjectHue, getProjectLabel, hostOf } from "./projectMeta";
+import { getProjectHue, getProjectLabel, getProjectStatus, hostOf } from "./projectMeta";
 import "@/styles/projects.css";
 
 /** Large featured project: copy on one side, browser-framed screenshot on the other. */
 export default function ProjectFeatured({ project }: { project: Project }) {
   const titleId = `project-${project.id}-title`;
   const style = { "--h": getProjectHue(project) } as CSSProperties;
+  const status = getProjectStatus(project);
+  const where = project.live ? hostOf(project.live) : project.github ? "GitHub" : "Private";
 
   return (
     <article className="pfeatured card spotlight" aria-labelledby={titleId} style={style}>
@@ -27,6 +29,23 @@ export default function ProjectFeatured({ project }: { project: Project }) {
         <p className="pfeatured-desc" data-fx>
           {project.description}
         </p>
+        <dl className="pfeatured-facts" data-fx>
+          <div>
+            <dt>Status</dt>
+            <dd data-tone={status.tone}>
+              <span className="pcard-status-dot" aria-hidden="true" />
+              {status.label}
+            </dd>
+          </div>
+          <div>
+            <dt>Type</dt>
+            <dd>{getProjectLabel(project)}</dd>
+          </div>
+          <div>
+            <dt>{project.live ? "Live at" : "Source"}</dt>
+            <dd>{where}</dd>
+          </div>
+        </dl>
         {project.highlights.length > 0 && (
           <ul className="pcard-highlights pfeatured-highlights" data-fx>
             {project.highlights.slice(0, 3).map((h) => (
@@ -39,7 +58,7 @@ export default function ProjectFeatured({ project }: { project: Project }) {
         )}
         <ul className="ptags" aria-label="Technologies">
           {project.tags.slice(0, 6).map((tag) => (
-            <li key={tag} className="chip chip-neutral">
+            <li key={tag} className="ptag">
               {tag}
             </li>
           ))}

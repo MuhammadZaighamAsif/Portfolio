@@ -1,9 +1,17 @@
-import { useRef } from "react";
-import { Briefcase, GraduationCap, Rocket } from "lucide-react";
+import { useRef, type CSSProperties } from "react";
+import { Bot, Briefcase, Cloud, Code2, Database, GraduationCap, Rocket, type LucideIcon } from "lucide-react";
 import { education, experience, meta, projects } from "@/data/portfolio";
 import { useTilt } from "@/lib/pointerFx";
 
 const school = education[0];
+
+/** Tech nodes circling the portrait: position on the ring (% of its box) and icon. Decorative. */
+const ORBIT: { x: string; y: string; Icon: LucideIcon }[] = [
+  { x: "95%", y: "29%", Icon: Code2 },
+  { x: "85%", y: "79%", Icon: Cloud },
+  { x: "5%", y: "71%", Icon: Bot },
+  { x: "15%", y: "21%", Icon: Database },
+];
 const liveClientSites = projects.filter((p) => p.category === "Client Work" && p.live).length;
 
 /**
@@ -19,6 +27,14 @@ export default function ProfilePhoto() {
   return (
     <div className="hp">
       <div className="hp-glow" aria-hidden="true" />
+      <div className="hp-orbit" aria-hidden="true">
+        <span className="hp-orbit-ring" />
+        {ORBIT.map(({ x, y, Icon }) => (
+          <span key={`${x}-${y}`} className="hp-orbit-node" style={{ "--x": x, "--y": y } as CSSProperties}>
+            <Icon size={18} strokeWidth={1.9} />
+          </span>
+        ))}
+      </div>
       <div className="hp-float">
         <div className="hp-stage">
           <div ref={tiltRef} className="hp-tilt">

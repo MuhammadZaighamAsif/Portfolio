@@ -23,7 +23,7 @@ export interface SkillGroup {
 /** Lucide fallback used when no brand logo is bundled for a tool (see src/data/brandIcons.ts). */
 export type FallbackIcon =
   | "generic" | "design" | "mcp" | "balancer" | "cicd" | "agents" | "server" | "pullrequest" | "loop"
-  | "memory" | "eval" | "guard" | "human" | "rag" | "brain" | "plug" | "code" | "database";
+  | "gauge" | "memory" | "eval" | "guard" | "human" | "rag" | "brain" | "plug" | "code" | "database";
 
 export type ToolCategory =
   | "Communication"
@@ -140,7 +140,7 @@ export const skills: SkillGroup[] = [
   },
   {
     category: "Tools",
-    items: ["Git", "Linux", "GitHub", "VS Code", "Windows Forms"],
+    items: ["Git", "Linux", "GitHub", "VS Code", "Android Studio", "Windows Forms"],
   },
   // DRAFT: review before publishing.
   {
@@ -181,6 +181,7 @@ export const tools: ToolItem[] = [
   // Development
   { name: "GitHub", category: "Development", use: "Repositories, pull requests and code review.", hue: "#6B7280", featured: true },
   { name: "Git", category: "Development", use: "Branching, rebasing and clean commit history.", hue: "#F05032" },
+  { name: "Android Studio", category: "Development", use: "Building and debugging Android apps with emulators.", hue: "#3DDC84" },
   { name: "VS Code", category: "Development", use: "Primary editor with linting and debugging.", hue: "#2F80ED", featured: true },
   { name: "Linux", category: "Development", use: "Daily shell, scripting and server work.", hue: "#D9A400" },
   { name: "Bash", category: "Development", use: "Automation scripts and command-line workflows.", hue: "#4EAA25" },
@@ -198,6 +199,7 @@ export const tools: ToolItem[] = [
   { name: "GitHub Actions", category: "DevOps", use: "Automated build, test and deploy workflows.", hue: "#2088FF", featured: true },
   { name: "CI/CD Pipelines", category: "DevOps", use: "Continuous integration and delivery from commit to prod.", hue: "#0891B2", fallback: "cicd", featured: true },
   { name: "Load Balancer", category: "DevOps", use: "Spreading traffic across instances for availability.", hue: "#7C3AED", fallback: "balancer", featured: true },
+  { name: "LoadRunner", category: "DevOps", use: "Load and performance testing under realistic traffic.", hue: "#0F6CBD", fallback: "gauge" },
   { name: "Nginx", category: "DevOps", use: "Reverse proxy, TLS termination and static serving.", hue: "#009639" },
   { name: "GitLab CI/CD", category: "DevOps", use: "Pipelines and runners on GitLab.", hue: "#FC6D26" },
   { name: "Jenkins", category: "DevOps", use: "Self-hosted automation servers and pipelines.", hue: "#D33833", fallback: "cicd" },
@@ -271,7 +273,7 @@ export const devops: {
       title: "Operate",
       caption: "Scale and keep it running",
       icon: "operate",
-      tools: [{ name: "Load Balancer", fallback: "balancer" }, { name: "Nginx" }, { name: "Linux" }, { name: "Bash" }],
+      tools: [{ name: "Load Balancer", fallback: "balancer" }, { name: "Nginx" }, { name: "LoadRunner", fallback: "gauge" }, { name: "Linux" }, { name: "Bash" }],
     },
   ],
   clouds: [
@@ -350,7 +352,7 @@ export const projects: Project[] = [
     featured: true,
     category: "Client Work",
     categories: ["Client Work", "Full Stack"],
-    thumbnail: "/agwatto-home.png",
+    thumbnail: "/agwatto-home.webp",
     highlights: [
       "Built a production-ready MERN travel website for a real client business",
       "Designed package listings, customer-friendly UI, and conversion-focused browsing experience",
