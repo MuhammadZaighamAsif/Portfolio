@@ -1,8 +1,18 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, ChevronRight, ExternalLink, Github, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Moon, Sparkles, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
-import { projects, type Project } from "@/data/portfolio";
+import { Flip } from "gsap/Flip";
+import { projects, meta, type Project } from "@/data/portfolio";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useTheme } from "@/hooks/useTheme";
+import { gsap, useGsap } from "@/lib/animations";
+import { prefersReducedMotion } from "@/lib/motion";
+import { useSpotlight } from "@/lib/pointerFx";
+import ProjectCard from "@/components/portfolio/ProjectCard";
+import "@/styles/projects.css";
+import "@/styles/projects-page.css";
+
+gsap.registerPlugin(Flip);
 
 const tabs = ["All", "Featured", "Full Stack", "AI", "Client Work"] as const;
 type Tab = (typeof tabs)[number];
@@ -28,224 +38,277 @@ const getProjectCategory = (project: Project) => {
   return "Client Work";
 };
 
+function filterProjects(tab: Tab): Project[] {
+  if (tab === "All") return projects;
+  if (tab === "Featured") return projects.filter((project) => project.featured);
+  if (tab === "Client Work") return projects.filter((project) => project.categories?.includes("Client Work"));
+  if (tab === "Full Stack") {
+    return projects.filter((project) => project.categories?.includes("Full Stack") || project.category === "Full Stack");
+  }
+  return projects.filter((project) => getProjectCategory(project) === tab);
+}
+
+const PAGE_DESCRIPTION =
+  "Browse every project by Muhammad Zaigham Asif: client websites, full-stack MERN apps and AI tools, with live demos and source code on GitHub.";
+
+const liveCount = projects.filter((p) => p.live).length;
+const repoCount = projects.filter((p) => p.github).length;
+
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
-  usePageMeta({ title: "All Projects — Muhammad Zaigham Asif" });
+  const { theme, toggle } = useTheme();
+  usePageMeta({ title: "All Projects — Muhammad Zaigham Asif", description: PAGE_DESCRIPTION, path: "/projects" });
 
-  const highlightedProject: Project | undefined =
-    projects.find((project) => project.categories?.includes("Client Work")) ?? projects[0];
+  const pageRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLSpanElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const flipStateRef = useRef<ReturnType<typeof Flip.getState> | null>(null);
+  const revealRef = useRef<gsap.core.Tween | undefined>(undefined);
 
-  const filteredProjects = useMemo(() => {
-    if (activeTab === "All") return projects;
-    if (activeTab === "Featured") return projects.filter((project) => project.featured);
-    if (activeTab === "Client Work") return projects.filter((project) => project.categories?.includes("Client Work"));
-    if (activeTab === "Full Stack") return projects.filter((project) => project.categories?.includes("Full Stack") || project.category === "Full Stack");
+  const visible = useMemo(() => new Set(filterProjects(activeTab).map((p) => p.id)), [activeTab]);
+  const counts = useMemo(() => Object.fromEntries(tabs.map((t) => [t, filterProjects(t).length])) as Record<Tab, number>, []);
 
-    return projects.filter((project) => getProjectCategory(project) === activeTab);
+  useSpotlight(gridRef);
+
+  /* ── Entrance animations ── */
+  useGsap(pageRef, (helpers, root) => {
+    const { reveal, countUp } = helpers;
+    reveal(root.querySelectorAll("[data-hero]"), { y: 28, stagger: 0.09, immediate: true });
+    root.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+      countUp(el, Number(el.dataset.count), { duration: 1.3, trigger: el, start: "top 98%" });
+    });
+    const toolbar = root.querySelector(".ppage-toolbar");
+    if (toolbar) reveal(toolbar, { y: 20, duration: 0.8, trigger: toolbar, start: "top 94%" });
+    const grid = gridRef.current;
+    if (grid) revealRef.current = reveal(Array.from(grid.children), { y: 48, stagger: 0.08, trigger: grid, start: "top 90%" });
+  });
+
+  /* ── Header shadow once the page has scrolled ── */
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    const header = headerRef.current;
+    if (!sentinel || !header || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => {
+      header.dataset.stuck = entry.isIntersecting ? "false" : "true";
+    });
+    io.observe(sentinel);
+    return () => io.disconnect();
+  }, []);
+
+  /* ── Sliding tab indicator (measured straight onto the DOM: no re-render needed) ── */
+  const moveIndicator = useCallback(() => {
+    const list = tabsRef.current;
+    const indicator = indicatorRef.current;
+    const active = list?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!list || !indicator || !active) return;
+    indicator.style.width = `${active.offsetWidth}px`;
+    indicator.style.translate = `${active.offsetLeft}px 0`;
+  }, []);
+
+  useLayoutEffect(() => {
+    moveIndicator();
+    const active = tabsRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    active?.scrollIntoView({ inline: "nearest", block: "nearest" });
+  }, [activeTab, moveIndicator]);
+
+  useEffect(() => {
+    const list = tabsRef.current;
+    if (!list) return;
+    // Enable the slide transition only after the first placement so it doesn't fly in from 0.
+    const raf = requestAnimationFrame(() => list.setAttribute("data-ready", "true"));
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(moveIndicator) : undefined;
+    ro?.observe(list);
+    void document.fonts?.ready.then(moveIndicator).catch(() => undefined);
+    window.addEventListener("resize", moveIndicator);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro?.disconnect();
+      window.removeEventListener("resize", moveIndicator);
+    };
+  }, [moveIndicator]);
+
+  /* ── Flip: capture layout before the filter changes, animate to the new one after render ── */
+  const selectTab = (tab: Tab) => {
+    if (tab === activeTab) return;
+    const grid = gridRef.current;
+    if (grid && !prefersReducedMotion()) {
+      const cards = grid.querySelectorAll(".pcard");
+      revealRef.current?.progress(1);
+      Flip.killFlipsOf(cards, true);
+      // Leaving cards go absolute during the flip; hold the grid height so the page doesn't jump.
+      grid.style.minHeight = `${grid.offsetHeight}px`;
+      flipStateRef.current = Flip.getState(cards);
+    }
+    setActiveTab(tab);
+  };
+
+  useLayoutEffect(() => {
+    const state = flipStateRef.current;
+    const grid = gridRef.current;
+    if (!state || !grid) return;
+    flipStateRef.current = null;
+    const release = () => {
+      grid.style.minHeight = "";
+    };
+    Flip.from(state, {
+      duration: 0.7,
+      ease: "power3.inOut",
+      absolute: true,
+      stagger: 0.03,
+      onEnter: (els) =>
+        gsap.fromTo(
+          els,
+          { opacity: 0, scale: 0.9 },
+          { opacity: 1, scale: 1, duration: 0.5, delay: 0.15, ease: "power3.out", stagger: 0.04, clearProps: "opacity,transform" }
+        ),
+      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.9, duration: 0.3, ease: "power2.in" }),
+      onComplete: release,
+    });
   }, [activeTab]);
 
+  useEffect(() => {
+    const grid = gridRef.current;
+    return () => {
+      if (!grid) return;
+      const cards = grid.querySelectorAll(".pcard");
+      Flip.killFlipsOf(cards, true);
+      gsap.killTweensOf(cards);
+      grid.style.minHeight = "";
+    };
+  }, []);
+
+  const resultCount = visible.size;
+
   return (
-    <div style={{ backgroundColor: "var(--bg-primary)", minHeight: "100vh" }}>
-      <div className="max-w-6xl mx-auto px-6 pt-8 pb-20">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-4 py-2 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
-          >
-            <ArrowLeft size={16} />
+    <div ref={pageRef} className="ppage page-enter">
+      <a href="#projects-main" className="skip-link">
+        Skip to projects
+      </a>
+      <div ref={sentinelRef} className="ppage-sentinel" aria-hidden="true" />
+
+      <header ref={headerRef} className="ppage-header" data-stuck="false">
+        <div className="container-custom ppage-header-inner">
+          <Link to="/" className="ppage-home">
+            <ArrowLeft size={16} aria-hidden="true" className="ppage-home-arrow" />
             Home
           </Link>
-
-          <div className="text-right">
-            <p className="section-tag mb-1">Portfolio</p>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground-default">All Projects</h1>
-          </div>
+          <p className="ppage-header-title">All Projects</p>
+          <button
+            type="button"
+            onClick={toggle}
+            className="icon-btn"
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+          </button>
         </div>
+      </header>
 
-        {highlightedProject && (
-          <div className="project-spotlight-shell mb-8 overflow-hidden rounded-3xl border border-border bg-surface-raised">
-            <div className="project-spotlight-glow" />
-            <div className="bg-gradient-primary px-6 py-4">
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/90">
-                <Sparkles size={14} />
-                Featured project
-              </div>
-            </div>
-            <div className="p-6 md:p-8">
-              <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
-                <div>
-                  <span className="featured-badge inline-block mb-3">Highlight</span>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground-default">{highlightedProject.title}</h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground-subtle">{highlightedProject.description}</p>
-
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    {highlightedProject.live && (
-                      <a
-                        href={highlightedProject.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="project-product-cta inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
-                        aria-label={`${highlightedProject.title} — live demo (opens in a new tab)`}
-                      >
-                        Live demo
-                        <ExternalLink size={14} />
-                      </a>
-                    )}
-                    {highlightedProject.github && (
-                      <a
-                        href={highlightedProject.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/90 px-5 py-3 text-sm font-semibold text-foreground-default transition hover:border-primary/40 hover:text-primary-color"
-                      >
-                        GitHub
-                        <Github size={14} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                <div className="project-spotlight-thumb relative overflow-hidden rounded-2xl border border-border bg-surface">
-                  <div className="project-spotlight-glow-secondary" />
-                  {highlightedProject.thumbnail ? (
-                    <img
-                      src={highlightedProject.thumbnail}
-                      alt={`${highlightedProject.title} homepage screenshot`}
-                      decoding="async"
-                      className="h-52 w-full object-cover md:h-64"
-                    />
-                  ) : (
-                    <div className="h-52 w-full md:h-64" aria-hidden="true" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="mb-8 flex flex-wrap gap-3" role="group" aria-label="Filter projects by category">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              aria-pressed={activeTab === tab}
-              className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                activeTab === tab
-                  ? "border-transparent bg-gradient-primary text-white shadow-glow-primary"
-                  : "border-border bg-surface-raised text-foreground-subtle hover:border-primary/40 hover:text-foreground-default"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {filteredProjects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-surface-raised px-6 py-16 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-primary text-white shadow-glow-primary">
-              <Sparkles size={24} />
-            </div>
-            <h3 className="text-2xl font-bold text-foreground-default">No projects in this category yet</h3>
-            <p className="mt-2 max-w-md text-sm leading-6 text-foreground-subtle">
-              I’m adding more work and case studies here soon. For now, switch back to all projects or head home.
+      <main id="projects-main" tabIndex={-1} className="ppage-main">
+        <section className="ppage-hero" aria-labelledby="projects-page-title">
+          <div className="container-custom">
+            <p className="eyebrow" data-hero>
+              Portfolio
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => setActiveTab("All")}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-sm font-semibold text-white"
-              >
-                Show all
-                <ArrowRight size={14} />
-              </button>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground-default"
-              >
-                <ArrowLeft size={14} />
-                Home
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredProjects.map((project, i) => (
-              <div
-                key={project.id}
-                className="project-card group"
-                style={{ transitionDelay: `${i * 80}ms` }}
-              >
-                <div className="project-card-strip" />
-
-                <div className="p-6">
-                  <div className="flex items-start gap-3 mb-2">
-                    <div className="mc-slot">
-                      <Github size={18} className="text-foreground-default" />
-                    </div>
-                    <div>
-                      {project.featured && (
-                        <span className="featured-badge mb-1 inline-block">Featured</span>
-                      )}
-                      <h3 className="text-lg font-semibold text-foreground-default group-hover:text-primary-color transition-colors">
-                        {project.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-foreground-subtle leading-relaxed mb-4">
-                    {project.description}
-                  </p>
-
-                  {project.highlights.length > 0 && (
-                    <ul className="space-y-1 mb-4">
-                      {project.highlights.slice(0, 3).map((h, hi) => (
-                        <li key={hi} className="flex items-start gap-2 text-xs text-foreground-subtle">
-                          <ChevronRight size={12} className="text-accent-color mt-0.5 shrink-0" />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.map((tag) => (
-                      <span key={tag} className="tech-tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="border-t border-outline-default pt-4 flex items-center gap-4">
-                    {project.github && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="card-link"
-                      >
-                        <Github size={14} />
-                        Source Code
-                      </a>
-                    )}
-                    {project.live && (
-                      <a
-                        href={project.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="card-link"
-                      >
-                        <ExternalLink size={14} />
-                        Live Demo
-                      </a>
-                    )}
-                  </div>
-                </div>
+            <h1 id="projects-page-title" className="ppage-title" data-hero>
+              All <span className="gradient-text">Projects</span>
+            </h1>
+            <p className="ppage-lede" data-hero>
+              The complete archive: client websites, full-stack applications, and AI experiments, each with its stack, highlights, and links.
+            </p>
+            <dl className="ppage-stats" data-hero>
+              <div className="ppage-stat">
+                <dt>Projects</dt>
+                <dd data-count={projects.length}>{projects.length}</dd>
               </div>
+              <div className="ppage-stat">
+                <dt>Live sites</dt>
+                <dd data-count={liveCount}>{liveCount}</dd>
+              </div>
+              <div className="ppage-stat">
+                <dt>Repos</dt>
+                <dd data-count={repoCount}>{repoCount}</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <section className="container-custom ppage-body" aria-label="Project list">
+          <div className="ppage-toolbar">
+            <div ref={tabsRef} className="ptabs" role="group" aria-label="Filter projects by category">
+              <span ref={indicatorRef} className="ptabs-indicator" aria-hidden="true" />
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => selectTab(tab)}
+                  aria-pressed={activeTab === tab}
+                  className="ptab"
+                >
+                  {tab}
+                  <span className="ptab-count" aria-hidden="true">
+                    {counts[tab]}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="ppage-count" aria-live="polite" aria-atomic="true">
+              Showing <strong>{resultCount}</strong> of {projects.length} {projects.length === 1 ? "project" : "projects"}
+              {activeTab !== "All" && (
+                <>
+                  {" "}in <strong>{activeTab}</strong>
+                </>
+              )}
+            </p>
+          </div>
+
+          <div ref={gridRef} className="ppage-grid">
+            {projects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} hidden={!visible.has(project.id)} />
             ))}
           </div>
-        )}
-      </div>
+
+          {resultCount === 0 && (
+            <div className="ppage-empty">
+              <span className="ppage-empty-icon" aria-hidden="true">
+                <Sparkles size={24} />
+              </span>
+              <h2 className="ppage-empty-title">No projects in this category yet</h2>
+              <p className="ppage-empty-text">
+                I'm adding more work and case studies here soon. For now, switch back to all projects or head home.
+              </p>
+              <div className="ppage-empty-actions">
+                <button type="button" onClick={() => selectTab("All")} className="btn btn-primary btn-sm">
+                  Show all
+                  <ArrowRight size={14} aria-hidden="true" className="btn-arrow" />
+                </button>
+                <Link to="/" className="btn btn-secondary btn-sm">
+                  <ArrowLeft size={14} aria-hidden="true" />
+                  Home
+                </Link>
+              </div>
+            </div>
+          )}
+
+          <div className="ppage-more">
+            <p>Looking for more? Everything else lives on GitHub.</p>
+            <a
+              href={meta.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-secondary"
+              aria-label="Muhammad Zaigham Asif on GitHub (opens in a new tab)"
+            >
+              <Github size={16} aria-hidden="true" />
+              Visit GitHub
+              <ArrowUpRight size={14} aria-hidden="true" className="btn-arrow" />
+            </a>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

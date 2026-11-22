@@ -1,15 +1,24 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
+import { prefersReducedMotion } from "@/lib/motion";
+import "@/styles/splash.css";
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
+const LETTERS = ["M", "Z", "A"] as const;
+/** Hard ceiling so a throttled tab can never leave visitors stuck on the intro. */
+const FALLBACK_MS = 3000;
+
+/**
+ * ~1.4s brand intro: the "MZA" monogram is drawn and revealed, a thin progress line fills, then
+ * everything lifts away. Click / tap / any key skips straight to the exit. StrictMode-safe: every
+ * tween and timer is torn down on unmount.
+ */
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
-  const [progress, setProgress] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const squaresRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   // Keep the latest callback without restarting the animation when the parent re-renders.
   const onCompleteRef = useRef(onComplete);
@@ -17,217 +26,120 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  useEffect(() => {
-    const squaresEl = squaresRef.current;
-    const contentEl = contentRef.current;
-    const containerEl = containerRef.current;
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
 
-    const ctx = gsap.context(() => {
-      // Animate squares
-      const squares = squaresEl?.querySelectorAll(".acid-square");
-      squares?.forEach((square, i) => {
-        gsap.to(square, {
-          rotation: 360,
-          scale: gsap.utils.random(0.5, 1.5),
-          x: gsap.utils.random(-50, 50),
-          y: gsap.utils.random(-50, 50),
-          duration: gsap.utils.random(2, 4),
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: i * 0.1,
-        });
-      });
-
-      // Content entrance
-      gsap.from(contentEl, {
-        scale: 0.9,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        delay: 0.2,
-      });
-    });
-
-    // Progress animation
-    const duration = 2500;
-    let frame = 0;
-    let startTimer = 0;
-    let finished = false;
-    let startTime = 0;
-
+    let done = false;
     const finish = () => {
-      if (finished) return;
-      finished = true;
-      gsap.to(squaresEl, {
-        scale: 0,
-        opacity: 0,
-        duration: 0.6,
-        ease: "back.in(1.5)",
-      });
-      gsap.to(contentEl, {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.in",
-      });
-      gsap.to(containerEl, {
-        opacity: 0,
-        duration: 0.4,
-        delay: 0.3,
-        onComplete: () => onCompleteRef.current(),
-      });
+      if (done) return;
+      done = true;
+      onCompleteRef.current();
     };
 
-    const animate = (now: number) => {
-      if (startTime === 0) startTime = now;
-      const elapsed = now - startTime;
-      const newProgress = Math.min((elapsed / duration) * 100, 100);
+    // Visitors who prefer reduced motion get no intro at all (App normally skips it already).
+    if (prefersReducedMotion()) {
+      const t = window.setTimeout(finish, 0);
+      return () => window.clearTimeout(t);
+    }
 
-      setProgress(Math.floor(newProgress));
+    const q = <T extends Element>(sel: string) => root.querySelector<T>(sel);
+    const ctx = gsap.context(() => {
+      const mark = q(".splash-mark");
+      const glow = q(".splash-glow");
+      const ringBg = q(".splash-ring-bg");
+      const ringLine = q(".splash-ring-line");
+      const letters = root.querySelectorAll(".splash-letter");
+      const caption = q(".splash-caption");
+      const track = q(".splash-track");
+      const fill = q(".splash-fill");
+      const inner = q(".splash-inner");
 
-      if (newProgress < 100) {
-        frame = requestAnimationFrame(animate);
-      } else {
-        finish();
-      }
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, onComplete: finish });
+      tlRef.current = tl;
+
+      // Intro (0 -> ~0.75s)
+      tl.fromTo(mark, { scale: 0.86, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: "expo.out" }, 0)
+        .fromTo(glow, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8 }, 0)
+        .fromTo(ringBg, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.05)
+        .fromTo(ringLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 0.05)
+        .fromTo(
+          letters,
+          { yPercent: 115, rotate: 6 },
+          { yPercent: 0, rotate: 0, duration: 0.6, stagger: 0.07, ease: "expo.out" },
+          0.18
+        )
+        .fromTo(caption, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45 }, 0.4)
+        .fromTo(track, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.3)
+        // progress line fills while the monogram settles
+        .fromTo(fill, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, 0.3)
+        .addLabel("exit", 1.0)
+        // Exit (1.0 -> ~1.4s): content lifts away, the whole overlay fades
+        .to(letters, { yPercent: -115, duration: 0.32, stagger: 0.04, ease: "power3.in" }, "exit")
+        .to(
+          [caption, track],
+          { opacity: 0, y: -8, duration: 0.25, ease: "power2.in" },
+          "exit"
+        )
+        .to(ringLine, { opacity: 0, duration: 0.25, ease: "power2.in" }, "exit")
+        .to(inner, { scale: 1.06, duration: 0.38, ease: "power2.in" }, "exit")
+        .to(root, { opacity: 0, duration: 0.3, ease: "power1.inOut" }, "exit+=0.1");
+    }, root);
+
+    const skip = () => {
+      const tl = tlRef.current;
+      if (!tl || done) return;
+      // Jump to the start of the exit and play it at a brisk pace.
+      if (tl.time() < (tl.labels.exit ?? 0)) tl.seek("exit");
+      tl.timeScale(1.4);
     };
+    window.addEventListener("keydown", skip);
+    root.addEventListener("pointerdown", skip);
 
-    startTimer = window.setTimeout(() => {
-      frame = requestAnimationFrame(animate);
-    }, 300);
+    const fallback = window.setTimeout(finish, FALLBACK_MS);
 
     return () => {
-      window.clearTimeout(startTimer);
-      cancelAnimationFrame(frame);
+      window.clearTimeout(fallback);
+      window.removeEventListener("keydown", skip);
+      root.removeEventListener("pointerdown", skip);
+      tlRef.current = null;
       ctx.revert();
-      gsap.killTweensOf([squaresEl, contentEl, containerEl]);
     };
   }, []);
 
-  // Generate acid squares
-  const generateSquares = () => {
-    const squares = [];
-    const positions = [
-      { top: "10%", left: "15%", size: 80, delay: 0 },
-      { top: "20%", right: "20%", size: 60, delay: 0.2 },
-      { bottom: "25%", left: "25%", size: 100, delay: 0.4 },
-      { bottom: "15%", right: "15%", size: 70, delay: 0.6 },
-      { top: "50%", left: "8%", size: 50, delay: 0.8 },
-      { top: "60%", right: "10%", size: 90, delay: 1 },
-      { top: "35%", left: "45%", size: 40, delay: 1.2 },
-    ];
-
-    for (let i = 0; i < positions.length; i++) {
-      const pos = positions[i];
-      squares.push(
-        <div
-          key={i}
-          className="acid-square absolute"
-          style={{
-            ...pos,
-            width: pos.size,
-            height: pos.size,
-            border: "2px solid var(--accent)",
-            opacity: 0.3,
-            pointerEvents: "none",
-          }}
-        />
-      );
-    }
-    return squares;
-  };
-
   return (
-    <div
-      ref={containerRef}
-      role="status"
-      aria-live="polite"
-      aria-label="Loading portfolio"
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
-      style={{
-        background: "var(--bg-primary)",
-      }}
-    >
-      <div ref={squaresRef} className="absolute inset-0">
-        {generateSquares()}
-      </div>
-
-      {/* Content */}
-      <div ref={contentRef} className="relative z-10 text-center">
-        {/* Logo */}
-        <div className="mb-8">
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 mb-3 relative"
-          >
-            {/* Rotating square behind text */}
-            <div
-              className="absolute inset-0 border-2"
-              style={{
-                borderColor: "var(--accent)",
-                animation: "rotate 3s linear infinite",
-              }}
+    <div ref={rootRef} className="splash" role="status" aria-live="polite" aria-label="Loading portfolio">
+      <div className="splash-inner">
+        <div className="splash-mark" aria-hidden="true">
+          <span className="splash-glow" />
+          <svg className="splash-ring" viewBox="0 0 112 112">
+            <rect className="splash-ring-bg" x="1" y="1" width="110" height="110" rx="30" />
+            <rect
+              className="splash-ring-line"
+              x="1"
+              y="1"
+              width="110"
+              height="110"
+              rx="30"
+              pathLength={1}
+              strokeDasharray={1}
             />
-            <span
-              className="relative text-3xl font-bold z-10"
-              style={{ color: "var(--text-primary)" }}
-            >
-              MZA
-            </span>
-          </div>
+          </svg>
+          <span className="splash-letters">
+            {LETTERS.map((letter) => (
+              <span key={letter} className="splash-letter-mask">
+                <span className="splash-letter">{letter}</span>
+              </span>
+            ))}
+          </span>
         </div>
-
-        {/* Progress bar container */}
-        <div className="w-56 mx-auto">
-          {/* Progress bar background */}
-          <div
-            className="relative h-1 mb-3 overflow-hidden"
-            style={{ background: "var(--border-color)" }}
-          >
-            {/* Animated progress */}
-            <div
-              className="absolute inset-y-0 left-0 transition-all duration-200 ease-out"
-              style={{
-                width: `${progress}%`,
-                background: "var(--accent)",
-              }}
-            />
-            {/* Shimmer effect */}
-            <div
-              className="absolute inset-0 opacity-50"
-              style={{
-                background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
-                animation: "shimmer 1.5s infinite",
-                transform: `translateX(${(progress - 100)}%)`,
-              }}
-            />
-          </div>
-
-          {/* Progress percentage */}
-          <div className="flex items-center justify-between text-xs">
-            <span
-              className="font-medium tracking-wider"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              LOADING
-            </span>
-            <span
-              className="font-bold tabular-nums"
-              style={{ color: "var(--accent)" }}
-            >
-              {progress}%
-            </span>
-          </div>
+        <div className="splash-meta" aria-hidden="true">
+          <span className="splash-caption">Software Engineer</span>
+          <span className="splash-track">
+            <span className="splash-fill" />
+          </span>
         </div>
       </div>
-
-      {/* Add keyframes for shimmer animation */}
-      <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
     </div>
   );
 }

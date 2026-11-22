@@ -1,127 +1,97 @@
-import { useRef, useEffect } from "react";
-import { GraduationCap, Calendar, MapPin } from "lucide-react";
+import { useRef } from "react";
+import { Calendar, GraduationCap, MapPin } from "lucide-react";
 import { education } from "@/data/portfolio";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ReactBitsText from "@/components/ui/ReactBitsText";
-import { prefersReducedMotion } from "@/lib/motion";
-
-gsap.registerPlugin(ScrollTrigger);
+import SectionHeader from "@/components/ui/SectionHeader";
+import { isOngoing } from "@/components/portfolio/journey";
+import { gsap, useGsap } from "@/lib/animations";
+import { useSpotlight } from "@/lib/pointerFx";
+import "@/styles/education.css";
 
 export default function Education() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
 
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion()) return;
+  useSpotlight(listRef, ".edu-card");
 
-    const ctx = gsap.context(() => {
-      const title = headerRef.current?.querySelector("h2");
-      const description = headerRef.current?.querySelector("p:last-child");
+  useGsap(sectionRef, (helpers, root) => {
+    const list = root.querySelector<HTMLElement>(".edu-list");
+    if (!list) return;
 
-      // Academic title settles into place
-      if (title) {
-        gsap.from(title, {
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          y: -22,
-          rotation: 1.5,
-          duration: 0.8,
-          ease: "power3.out",
-        });
-      }
-      if (description) {
-        gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 16, duration: 0.7, delay: 0.15, ease: "power2.out" });
-      }
+    // Cards rise in a stagger; icon tiles pop a beat later.
+    helpers.reveal(gsap.utils.toArray(".edu-card", list), { y: 44, stagger: 0.16, trigger: list, start: "top 84%" });
+    helpers.reveal(gsap.utils.toArray(".edu-tile", list), {
+      y: 0,
+      scale: 0.5,
+      stagger: 0.16,
+      delay: 0.12,
+      duration: 0.7,
+      ease: "back.out(2)",
+      trigger: list,
+      start: "top 84%",
+    });
 
-      const items = gridRef.current?.querySelectorAll(".education-item");
-      if (items && items.length > 0) {
-        gsap.from(items, {
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          y: 50,
-          stagger: 0.1,
-          duration: 0.8,
-          ease: "power3.out",
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    // Connector between the two tiles draws as the list scrolls into the middle of the viewport.
+    gsap.utils.toArray<HTMLElement>(".edu-line-fill", list).forEach((fill) => {
+      helpers.drawLine(fill, { axis: "x", trigger: list, start: "top 78%", end: "top 38%" });
+    });
+  });
 
   return (
-    <section ref={sectionRef} id="education" className="section section-education">
+    <section ref={sectionRef} id="education" className="section section-alt edu" aria-labelledby="education-title">
       <div className="container-custom">
-        {/* Header */}
-        <div ref={headerRef} className="max-w-3xl mb-16">
-          <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
-            Academic Background
-          </p>
-          <ReactBitsText text="Education" variant="blur" className="text-heading mb-6" />
-          <p className="text-body-large">
-            Building a strong foundation in software engineering and computer science.
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Academic Background"
+          title="Education"
+          description="Building a strong foundation in software engineering and computer science."
+          titleId="education-title"
+        />
 
-        {/* Education Grid */}
-        <div ref={gridRef} className="grid-minimal max-w-4xl">
-          {education.map((edu) => (
-            <article
-              key={edu.institution}
-              className="education-item card-minimal"
-            >
-              <div className="flex items-start gap-4 mb-4">
-                <div
-                  className="w-12 h-12 flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{
-                    background: "var(--accent)",
-                    color: "var(--bg-primary)",
-                  }}
-                >
-                  <GraduationCap size={20} />
+        <ol ref={listRef} className="edu-list">
+          {education.map((edu, index) => {
+            const ongoing = isOngoing(edu.duration);
+            const isLast = index === education.length - 1;
+
+            return (
+              <li key={edu.institution} className="edu-item" data-ongoing={ongoing ? "true" : undefined}>
+                <div className="edu-top" aria-hidden="true">
+                  <span className="edu-tile">
+                    <GraduationCap size={22} />
+                  </span>
+                  {!isLast && (
+                    <span className="edu-line">
+                      <span className="edu-line-fill" />
+                    </span>
+                  )}
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
-                    {edu.degree}
-                  </h3>
-                  <p className="font-medium mb-3" style={{ color: "var(--accent)" }}>
-                    {edu.institution}
-                  </p>
-                </div>
-              </div>
 
-              {/* Details */}
-              <div className="flex flex-wrap gap-4 text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
-                <span className="flex items-center gap-2">
-                  <Calendar size={16} />
-                  {edu.duration}
-                </span>
-                <span className="flex items-center gap-2">
-                  <MapPin size={16} />
-                  {edu.location}
-                </span>
-              </div>
+                <article className="edu-card card card-interactive card-pad spotlight">
+                  <span className={`chip edu-status${ongoing ? "" : " chip-neutral"}`}>
+                    {ongoing && <span className="status-dot" aria-hidden="true" />}
+                    {ongoing ? "In progress" : "Completed"}
+                  </span>
 
-              {/* Description */}
-              <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                {edu.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </div>
+                  <h3 className="edu-degree">{edu.degree}</h3>
+                  <p className="edu-institution">{edu.institution}</p>
 
-      {/* Divider */}
-      <div className="container-custom mt-24">
-        <div className="line" />
+                  <ul className="edu-facts">
+                    <li>
+                      <MapPin size={15} aria-hidden="true" />
+                      <span className="sr-only">Location: </span>
+                      {edu.location}
+                    </li>
+                    <li>
+                      <Calendar size={15} aria-hidden="true" />
+                      <span className="sr-only">Duration: </span>
+                      {edu.duration}
+                    </li>
+                  </ul>
+
+                  <p className="edu-desc">{edu.description}</p>
+                </article>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

@@ -1,0 +1,321 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   TOOLKIT & DEVOPS — filterable app tiles, delivery pipeline, cloud providers.
+   GSAP animates opacity/transform on .tool-tile, .pipe-stage, .pipe-node, .pipe-rail,
+   .cloud-card and .cloud-service, so none of those carry a CSS transition on
+   opacity or transform (hover motion uses the independent `translate`/`rotate` props).
+   ════════════════════════════════════════════════════════════════════════════ */
+.toolkit { overflow-x: clip; }
+
+/* ── Sub-headings ── */
+.toolkit-subhead {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.toolkit-subhead-devops { margin-top: clamp(3.5rem, 7vw, 5.5rem); margin-bottom: 0.6rem; }
+.toolkit-subtitle {
+  flex-shrink: 0;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.toolkit-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-strong), transparent);
+}
+.toolkit-count {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.toolkit-lede {
+  max-width: 44rem;
+  margin: 0 0 2.5rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ── Category filter ── */
+.tool-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 -0.25rem 1.25rem;
+  padding: 0.25rem 0.25rem 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tool-filters::-webkit-scrollbar { display: none; }
+.tool-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+.tool-filter:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.tool-filter:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tool-filter[aria-pressed="true"] {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px -8px var(--accent-glow);
+}
+.tool-filter-count {
+  min-width: 1.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ── App tiles ── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.8rem, 1.6vw, 1.1rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (max-width: 1023px) { .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 479px) { .tool-grid { grid-template-columns: minmax(0, 1fr); } }
+/* After a filter click, tiles fade in again (CSS only; GSAP has already finished with them). */
+.tool-grid[data-filtered] .tool-tile { animation: fadeIn 0.45s var(--ease-out) both; }
+
+.tool-tile {
+  --tool-hue: var(--accent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 1.15rem 1.2rem 1.25rem;
+  overflow: hidden;
+}
+/* Brand-coloured edge that sweeps in on hover */
+.tool-tile::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: var(--tool-hue);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+.tool-tile:hover::after, .tool-tile:focus-within::after { transform: scaleX(1); }
+
+.tool-top { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
+.tool-id { min-width: 0; }
+.tool-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: var(--radius-md);
+  color: var(--tool-hue);
+  background: color-mix(in srgb, var(--tool-hue) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--tool-hue) 26%, transparent);
+  transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out),
+    box-shadow 0.35s var(--ease-out), rotate 0.4s var(--ease-out);
+}
+:root[data-theme="dark"] .tool-icon { color: color-mix(in srgb, var(--tool-hue) 62%, #fff); }
+.tool-tile:hover .tool-icon {
+  background: var(--tool-hue);
+  color: #fff;
+  box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--tool-hue) 70%, transparent);
+  rotate: -6deg;
+}
+.tool-category {
+  display: block;
+  margin-top: 0.1rem;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.tool-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+.tool-use { margin: 0; font-size: 0.86rem; line-height: 1.55; color: var(--text-secondary); }
+
+/* ── Pipeline ── */
+.pipe { display: flex; flex-direction: column; gap: clamp(1.25rem, 2.5vw, 1.75rem); }
+.pipe-track {
+  --node: 2.75rem;
+  --node-inset: 1.4rem;
+  position: relative;
+}
+.pipe-stages {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pipe-stage {
+  position: relative;
+  min-width: 0;
+  padding: var(--node-inset);
+}
+.pipe-node {
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  margin-bottom: 1.1rem;
+  border-radius: 50%;
+  color: var(--accent-contrast);
+  background: var(--gradient-accent);
+  box-shadow: 0 10px 22px -8px var(--accent-glow);
+}
+.pipe-step {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pipe-title { margin: 0; font-size: 1.25rem; font-weight: 650; letter-spacing: -0.02em; color: var(--text-primary); }
+.pipe-caption { margin: 0.3rem 0 1.1rem; font-size: 0.9rem; color: var(--text-secondary); }
+.pipe-tools { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+.pipe-tool { font-size: 0.8rem; padding: 0.34rem 0.72rem; cursor: default; }
+
+/* Rails behind the nodes: horizontal on desktop, vertical on mobile. */
+.pipe-rail {
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--gradient-accent); /* drawn in with the scroll via the element's own scale */
+  pointer-events: none;
+}
+.pipe-rail-x {
+  /* runs through the node centres; visible in the gaps between cards, hidden behind them */
+  top: calc(var(--node-inset) + var(--node) / 2 - 1px);
+  left: calc(var(--node-inset) + var(--node) / 2);
+  right: calc(var(--node-inset) + var(--node) / 2);
+  height: 2px;
+}
+.pipe-rail-y { display: none; }
+/* A soft pulse travels along the finished rail */
+.pipe-rail-x::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  opacity: 0.75;
+  animation: pipe-pulse 3.6s linear infinite;
+}
+@keyframes pipe-pulse {
+  from { translate: -100% 0; }
+  to { translate: 560% 0; }
+}
+
+@media (max-width: 899px) {
+  .pipe-stages { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .pipe-rail-x { display: none; }
+  .pipe-rail-y {
+    display: block;
+    top: calc(var(--node-inset) + var(--node) / 2);
+    bottom: calc(var(--node-inset) + var(--node) / 2);
+    left: calc(var(--node-inset) + var(--node) / 2 - 1px);
+    width: 2px;
+  }
+}
+
+/* ── Cloud providers ── */
+.cloud-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(0.9rem, 2vw, 1.25rem); }
+@media (max-width: 767px) { .cloud-grid { grid-template-columns: minmax(0, 1fr); } }
+.cloud-card {
+  --cloud-hue: #ff9900;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 1.6rem);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--cloud-hue) 11%, transparent), transparent 60%),
+    var(--surface);
+  border-color: color-mix(in srgb, var(--cloud-hue) 30%, var(--border-color));
+}
+.cloud-head { display: flex; align-items: center; gap: 1rem; }
+.cloud-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: var(--radius-md);
+  color: var(--cloud-hue);
+  background: color-mix(in srgb, var(--cloud-hue) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cloud-hue) 30%, transparent);
+}
+.cloud-copy { min-width: 0; }
+.cloud-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.cloud-name { margin: 0.15rem 0 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); }
+.cloud-summary { margin: 0; font-size: 0.92rem; line-height: 1.55; color: var(--text-secondary); }
+.cloud-services { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.cloud-service {
+  padding: 0.38rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--cloud-hue) 34%, var(--border-color));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipe-rail-x::after { animation: none; display: none; }
+  .tool-tile::after, .tool-icon, .tool-filter { transition: none; }
+  .tool-grid[data-filtered] .tool-tile { animation: none; }
+  .tool-tile:hover .tool-icon { rotate: none; }
+}

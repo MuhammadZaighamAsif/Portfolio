@@ -1,0 +1,95 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   SPLASH  (src/components/portfolio/SplashScreen.tsx)
+   Everything inside is animated by GSAP (transform/opacity only). The overlay is
+   position:fixed and has no transformed ancestor.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--gradient-mesh), var(--bg-primary);
+  cursor: default;
+}
+
+.splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 1.5rem;
+}
+
+.splash-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+}
+.splash-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.splash-ring-bg {
+  fill: var(--surface);
+  stroke: var(--border-color);
+  stroke-width: 1;
+}
+.splash-ring-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.splash-glow {
+  position: absolute;
+  inset: -35%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--accent-glow), transparent 70%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.splash-letters {
+  position: relative;
+  display: flex;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+.splash-letter-mask { display: block; overflow: hidden; padding: 0.12em 0.01em; margin: -0.12em 0; }
+.splash-letter { display: block; will-change: transform; }
+
+.splash-meta { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+.splash-caption {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.splash-track {
+  position: relative;
+  width: min(11rem, 52vw);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--border-color);
+  overflow: hidden;
+}
+.splash-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--gradient-accent);
+  transform-origin: left center;
+}

@@ -18,6 +18,24 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
+    },
+    {
+      "source": "/(profile|profile-sm|og-image|icon-192|icon-512|icon-maskable-512|apple-touch-icon|favicon-32|agwatto-home)\\.(webp|jpg|png)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/(favicon\\.svg|favicon\\.ico|site\\.webmanifest)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/(dev_hub_offer_letter\\.pdf|developers_hub_completion_cert\\.pdf|quantum_logics_offer_letter\\.pdf|qubit-report-1\\.pdf|internship-certificate\\.pdf|old_resume\\.pdf|ess-offer-letter\\.png)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
     }
   ]
 }

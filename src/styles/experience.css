@@ -1,0 +1,346 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   EXPERIENCE — scroll-drawn timeline + document viewer.
+   Only design tokens (CSS variables). GSAP animates transform/opacity on
+   .exp-node, .exp-card, .exp-year, .exp-bullet, .exp-docs and .exp-seg-fill,
+   so none of those carry a CSS transition on opacity/transform.
+   ════════════════════════════════════════════════════════════════════════════ */
+.exp {
+  overflow-x: clip; /* cards slide in from ±44px; never widen the page mid-animation */
+  --exp-node: 2.75rem;
+  --exp-node-top: 1.25rem;
+  --exp-gap: clamp(1.75rem, 4vw, 3rem);
+  --exp-center: calc(var(--exp-node-top) + var(--exp-node) / 2);
+}
+
+.exp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--exp-gap);
+}
+
+/* ── One timeline row: [node | card] on mobile, [card | node | year] alternating on desktop ── */
+.exp-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--exp-node) minmax(0, 1fr);
+  column-gap: clamp(0.9rem, 3vw, 1.25rem);
+  align-items: start;
+}
+.exp-node { grid-column: 1; grid-row: 1; }
+.exp-card { grid-column: 2; grid-row: 1; }
+.exp-year { display: none; }
+
+/* Rail segment from this node's centre to the next node's centre */
+.exp-seg {
+  position: absolute;
+  z-index: 0;
+  top: var(--exp-center);
+  bottom: calc(-1 * (var(--exp-gap) + var(--exp-center)));
+  left: calc(var(--exp-node) / 2 - 1px);
+  width: 2px;
+  border-radius: 2px;
+  background: var(--border-color);
+  pointer-events: none;
+}
+.exp-seg-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+}
+
+/* ── Node ── */
+.exp-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--exp-node);
+  height: var(--exp-node);
+  margin-top: var(--exp-node-top);
+  border-radius: 50%;
+  background: var(--bg-secondary); /* masks the rail behind the node */
+}
+.exp-node-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.exp-item[data-current] .exp-node-core {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 10px 26px -8px var(--accent-glow);
+}
+.exp-node-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  animation: exp-pulse 2.4s var(--ease-out) infinite;
+}
+@keyframes exp-pulse {
+  0% { transform: scale(1); opacity: 0.65; }
+  80%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* ── Card ── */
+.exp-card {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  min-width: 0;
+}
+.exp-item[data-current] .exp-card {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border-color));
+  background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 46%), var(--surface);
+}
+
+.exp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
+  margin-bottom: 1rem;
+}
+.exp-current { gap: 0.5rem; }
+.exp-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+.exp-date svg { color: var(--text-tertiary); flex-shrink: 0; }
+
+.exp-role {
+  font-size: clamp(1.25rem, 2.4vw, 1.5rem);
+  font-weight: 650;
+  color: var(--text-primary);
+}
+.exp-company {
+  margin-top: 0.3rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.exp-bullets {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.exp-bullet {
+  position: relative;
+  padding-left: 1.3rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.exp-bullet::before {
+  content: "";
+  position: absolute;
+  left: 0.1rem;
+  top: 0.62em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft-strong);
+}
+
+.exp-docs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px dashed var(--border-color);
+}
+.exp-docs-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.exp-docs-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.document-button svg { color: var(--accent); }
+
+/* ── Desktop: centred rail with alternating cards ── */
+@media (min-width: 900px) {
+  .exp-item {
+    grid-template-columns: minmax(0, 1fr) var(--exp-node) minmax(0, 1fr);
+    column-gap: clamp(1.25rem, 3.5vw, 2.5rem);
+  }
+  .exp-seg { left: calc(50% - 1px); }
+  .exp-node { grid-column: 2; }
+
+  .exp-item[data-side="left"] .exp-card { grid-column: 1; }
+  .exp-item[data-side="right"] .exp-card { grid-column: 3; }
+
+  .exp-year {
+    display: block;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 0.4rem;
+    font-family: var(--font-display);
+    font-size: clamp(3.25rem, 6.5vw, 5.25rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--border-strong);
+    user-select: none;
+    pointer-events: none;
+  }
+  .exp-item[data-side="left"] .exp-year { grid-column: 3; text-align: left; }
+  .exp-item[data-side="right"] .exp-year { grid-column: 1; text-align: right; }
+}
+
+@media (max-width: 420px) {
+  .exp-date { margin-left: 0; width: 100%; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DOCUMENT VIEWER (rendered in a portal on <body>; the overlay is the only
+   fixed element and has no transformed ancestor)
+   ════════════════════════════════════════════════════════════════════════════ */
+.dv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.5rem, 2.5vw, 1.75rem);
+  background: color-mix(in srgb, var(--text-primary) 58%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: dv-fade-in 0.25s var(--ease-out) backwards;
+}
+[data-theme="dark"] .dv-overlay {
+  background: color-mix(in srgb, var(--bg-primary) 74%, transparent);
+}
+
+.dv-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(72rem, 100%);
+  height: 100%;
+  max-height: 58rem;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: dv-panel-in 0.38s var(--ease-out) backwards;
+}
+
+.dv-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.75rem 0.7rem 1rem;
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border-color);
+}
+.dv-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft-strong);
+  color: var(--accent);
+}
+.dv-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.dv-open { flex-shrink: 0; }
+.dv-close { flex-shrink: 0; }
+
+.dv-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--bg-secondary);
+}
+.dv-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+.dv-foot {
+  display: none;
+  padding: 0.55rem 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border-color);
+}
+.dv-foot a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+
+@media (max-width: 639px) {
+  .dv-overlay { padding: 0.5rem; }
+  .dv-panel { max-height: none; border-radius: var(--radius-md); }
+  .dv-bar { gap: 0.5rem; padding: 0.55rem 0.55rem 0.55rem 0.75rem; }
+  .dv-icon { display: none; }
+  .dv-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; line-height: 1.25; }
+  .dv-open { padding: 0; width: 2.5rem; height: 2.5rem; }
+  .dv-open-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .dv-foot { display: block; }
+}
+
+/* Exit: short, non-blocking (pointer-events off) and always unmounted by a timeout in the component */
+.dv-overlay[data-closing] {
+  pointer-events: none;
+  animation: dv-fade-out 0.22s var(--ease-in-out) forwards;
+}
+.dv-overlay[data-closing] .dv-panel {
+  animation: dv-panel-out 0.22s var(--ease-in-out) forwards;
+}
+
+@keyframes dv-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dv-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes dv-panel-in {
+  from { opacity: 0; transform: translateY(28px) scale(0.965); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes dv-panel-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(14px) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp-node-pulse { animation: none; opacity: 0; }
+  .dv-overlay, .dv-panel { animation: none; }
+  .dv-overlay[data-closing] { opacity: 0; }
+}

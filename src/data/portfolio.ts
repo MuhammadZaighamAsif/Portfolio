@@ -20,6 +20,54 @@ export interface SkillGroup {
   items: string[];
 }
 
+/** Lucide fallback used when no brand logo is bundled for a tool (see src/data/brandIcons.ts). */
+export type FallbackIcon =
+  | "generic" | "design" | "mcp" | "balancer" | "cicd" | "agents" | "server" | "pullrequest" | "loop"
+  | "memory" | "eval" | "guard" | "human" | "rag" | "brain" | "plug" | "code" | "database";
+
+export type ToolCategory =
+  | "Communication"
+  | "Planning & Docs"
+  | "Design"
+  | "Development"
+  | "DevOps"
+  | "Cloud"
+  | "AI"
+  | "Agentic AI";
+
+export interface ToolItem {
+  name: string;
+  category: ToolCategory;
+  /** One line on what the tool is used for. */
+  use: string;
+  /** Brand colour, used as a soft tint for the tile. */
+  hue: string;
+  /** Shown in the collapsed "All" view. */
+  featured?: boolean;
+  /** Used when the tool has no brand logo. */
+  fallback?: FallbackIcon;
+}
+
+export interface CloudProvider {
+  name: string;
+  summary: string;
+  services: string[];
+  /** Brand colour for the card tint. */
+  hue: string;
+}
+
+export interface PipelineItem {
+  name: string;
+  fallback?: FallbackIcon;
+}
+
+export interface PipelineStage {
+  title: string;
+  caption: string;
+  icon: "source" | "build" | "automate" | "deploy" | "operate" | "perceive" | "plan" | "act" | "reflect";
+  tools: PipelineItem[];
+}
+
 export interface ExperienceEntry {
   role: string;
   company: string;
@@ -55,6 +103,18 @@ export const meta = {
   location: "Lahore, Pakistan",
   linkedin: "https://linkedin.com/in/zaigham-asif-5a5499240",
   github: "https://github.com/MuhammadZaighamAsif",
+  /** One-line value proposition shown in the hero (the long `subtitle` is used for SEO/About). */
+  tagline: "I design and build fast, scalable web applications and AI-powered products.",
+  availability: "Open to internships & collaborations",
+  /** Profile photo (cropped head-and-shoulders, 4:5). Provide the WebP first, JPEG as fallback. */
+  photo: {
+    webp: "/profile.webp",
+    webpSmall: "/profile-sm.webp",
+    jpg: "/profile.jpg",
+    width: 700,
+    height: 875,
+    alt: "Portrait of Muhammad Zaigham Asif",
+  },
 };
 
 export const skills: SkillGroup[] = [
@@ -82,7 +142,201 @@ export const skills: SkillGroup[] = [
     category: "Tools",
     items: ["Git", "Linux", "GitHub", "VS Code", "Windows Forms"],
   },
+  // DRAFT: review before publishing.
+  {
+    category: "DevOps & Cloud",
+    items: ["Docker", "Kubernetes", "Terraform", "CI/CD", "GitHub Actions", "AWS", "GCP", "Nginx"],
+  },
+  {
+    category: "Agentic AI",
+    items: ["LLM Agents", "Tool Calling", "MCP", "LangChain", "RAG", "Multi-agent Systems"],
+  },
 ];
+
+/*
+ * TOOLKIT & DEVOPS — DRAFT CONTENT. Review every line before publishing: keep only tools you genuinely use,
+ * and edit the one-line descriptions so they match how you use them.
+ */
+/*
+ * TOOLKIT, DEVOPS & AGENTIC AI — DRAFT CONTENT. Review every line before publishing: keep only what you
+ * genuinely use, and edit the one-line descriptions so they match how you use each tool.
+ * Brand logos come from src/data/brandIcons.ts (matched by tool name); anything without a logo uses `fallback`.
+ */
+export const tools: ToolItem[] = [
+  // Communication
+  { name: "Slack", category: "Communication", use: "Team chat, async updates and quick syncs.", hue: "#E01E5A", featured: true },
+  { name: "Microsoft Teams", category: "Communication", use: "Meetings, channels and shared files.", hue: "#6264A7" },
+  { name: "Discord", category: "Communication", use: "Community chat and pair-programming calls.", hue: "#5865F2" },
+  { name: "Zoom", category: "Communication", use: "Video calls, demos and client meetings.", hue: "#2D8CFF" },
+  { name: "Google Meet", category: "Communication", use: "Quick video calls and stand-ups.", hue: "#00897B" },
+  // Planning & Docs
+  { name: "Notion", category: "Planning & Docs", use: "Project wikis, specs and personal knowledge base.", hue: "#6B7280", featured: true },
+  { name: "Linear", category: "Planning & Docs", use: "Issue tracking, sprints and roadmaps.", hue: "#5E6AD2", featured: true },
+  { name: "Jira", category: "Planning & Docs", use: "Agile boards, backlogs and sprint planning.", hue: "#2684FF" },
+  { name: "Trello", category: "Planning & Docs", use: "Lightweight kanban boards for small projects.", hue: "#0079BF" },
+  { name: "Google Workspace", category: "Planning & Docs", use: "Docs, Sheets, Drive and Calendar.", hue: "#4285F4" },
+  // Design
+  { name: "Figma", category: "Design", use: "UI mock-ups, prototypes and design hand-off.", hue: "#F24E1E", featured: true },
+  { name: "Canva", category: "Design", use: "Quick graphics, banners and social assets.", hue: "#00A8B5", fallback: "design" },
+  // Development
+  { name: "GitHub", category: "Development", use: "Repositories, pull requests and code review.", hue: "#6B7280", featured: true },
+  { name: "Git", category: "Development", use: "Branching, rebasing and clean commit history.", hue: "#F05032" },
+  { name: "VS Code", category: "Development", use: "Primary editor with linting and debugging.", hue: "#2F80ED", featured: true },
+  { name: "Linux", category: "Development", use: "Daily shell, scripting and server work.", hue: "#D9A400" },
+  { name: "Bash", category: "Development", use: "Automation scripts and command-line workflows.", hue: "#4EAA25" },
+  { name: "Postman", category: "Development", use: "Testing and documenting REST APIs.", hue: "#FF6C37" },
+  { name: "Swagger", category: "Development", use: "OpenAPI specs and interactive API docs.", hue: "#3F9F2E" },
+  { name: "Chrome DevTools", category: "Development", use: "Debugging, profiling and performance audits.", hue: "#4285F4" },
+  { name: "MongoDB Compass", category: "Development", use: "Exploring and querying MongoDB collections.", hue: "#3F9F3F" },
+  { name: "npm", category: "Development", use: "Package management and project scripts.", hue: "#CB3837" },
+  { name: "ESLint", category: "Development", use: "Static analysis and consistent code style.", hue: "#4B32C3" },
+  // DevOps
+  { name: "Docker Desktop", category: "DevOps", use: "Building and running containers locally.", hue: "#2496ED", featured: true },
+  { name: "Docker Hub", category: "DevOps", use: "Publishing and pulling container images.", hue: "#2496ED" },
+  { name: "Kubernetes", category: "DevOps", use: "Orchestrating, scaling and healing containers.", hue: "#326CE5", featured: true },
+  { name: "Terraform", category: "DevOps", use: "Infrastructure as code for repeatable environments.", hue: "#844FBA", featured: true },
+  { name: "GitHub Actions", category: "DevOps", use: "Automated build, test and deploy workflows.", hue: "#2088FF", featured: true },
+  { name: "CI/CD Pipelines", category: "DevOps", use: "Continuous integration and delivery from commit to prod.", hue: "#0891B2", fallback: "cicd", featured: true },
+  { name: "Load Balancer", category: "DevOps", use: "Spreading traffic across instances for availability.", hue: "#7C3AED", fallback: "balancer", featured: true },
+  { name: "Nginx", category: "DevOps", use: "Reverse proxy, TLS termination and static serving.", hue: "#009639" },
+  { name: "GitLab CI/CD", category: "DevOps", use: "Pipelines and runners on GitLab.", hue: "#FC6D26" },
+  { name: "Jenkins", category: "DevOps", use: "Self-hosted automation servers and pipelines.", hue: "#D33833", fallback: "cicd" },
+  { name: "Argo CD", category: "DevOps", use: "GitOps-style continuous delivery to Kubernetes.", hue: "#EF7B4D" },
+  { name: "Helm", category: "DevOps", use: "Packaging and versioning Kubernetes manifests.", hue: "#0F1689" },
+  { name: "Ansible", category: "DevOps", use: "Configuration management and server automation.", hue: "#EE0000" },
+  { name: "Prometheus", category: "DevOps", use: "Metrics collection and alerting.", hue: "#E6522C" },
+  { name: "Grafana", category: "DevOps", use: "Dashboards for metrics and logs.", hue: "#F46800" },
+  { name: "SonarQube", category: "DevOps", use: "Code quality and security scanning in CI.", hue: "#4E9BCD" },
+  // Cloud
+  { name: "AWS", category: "Cloud", use: "Compute, storage, networking and IAM.", hue: "#FF9900", featured: true },
+  { name: "Google Cloud (GCP)", category: "Cloud", use: "Compute Engine, Cloud Run and managed storage.", hue: "#4285F4", featured: true },
+  { name: "Vercel", category: "Cloud", use: "Frontend hosting with preview deployments.", hue: "#6B7280" },
+  { name: "Firebase", category: "Cloud", use: "Auth, realtime data and hosting for quick builds.", hue: "#FFA000" },
+  { name: "Supabase", category: "Cloud", use: "Postgres, auth and storage as a backend.", hue: "#3ECF8E" },
+  { name: "Hostinger", category: "Cloud", use: "Hosting for client websites.", hue: "#673DE6", fallback: "server" },
+  // AI
+  { name: "ChatGPT", category: "AI", use: "Brainstorming, debugging help and drafting.", hue: "#10A37F" },
+  { name: "Claude", category: "AI", use: "Code review, refactoring and technical writing.", hue: "#D97757", featured: true },
+  { name: "GitHub Copilot", category: "AI", use: "In-editor code completion and suggestions.", hue: "#8957E5" },
+  { name: "Cursor", category: "AI", use: "AI-assisted editor for larger refactors.", hue: "#6B7280" },
+  { name: "Gemini", category: "AI", use: "Multimodal prompts and long-context analysis.", hue: "#4285F4" },
+  { name: "Perplexity", category: "AI", use: "Research with cited sources.", hue: "#20808D" },
+  // Agentic AI
+  { name: "LangChain", category: "Agentic AI", use: "Chains, tools and retrieval for LLM apps.", hue: "#1C7C54", featured: true },
+  { name: "LangGraph", category: "Agentic AI", use: "Stateful, multi-step agent workflows as graphs.", hue: "#1C7C54", fallback: "agents", featured: true },
+  { name: "CrewAI", category: "Agentic AI", use: "Role-based multi-agent collaboration.", hue: "#FF5A50" },
+  { name: "AutoGen", category: "Agentic AI", use: "Conversational multi-agent frameworks.", hue: "#0078D4", fallback: "agents" },
+  { name: "LlamaIndex", category: "Agentic AI", use: "Data connectors and retrieval pipelines.", hue: "#8E5CF5" },
+  { name: "Model Context Protocol", category: "Agentic AI", use: "Standard way to give agents tools and context.", hue: "#D97757", fallback: "mcp", featured: true },
+  { name: "n8n", category: "Agentic AI", use: "Workflow automation with AI nodes.", hue: "#EA4B71" },
+  { name: "Hugging Face", category: "Agentic AI", use: "Open models, datasets and embeddings.", hue: "#FFB000" },
+  { name: "Ollama", category: "Agentic AI", use: "Running open models locally.", hue: "#6B7280" },
+  { name: "Pinecone", category: "Agentic AI", use: "Vector search for retrieval-augmented agents.", hue: "#1B17F5" },
+];
+
+export const devops: {
+  heading: string;
+  description: string;
+  stages: PipelineStage[];
+  clouds: CloudProvider[];
+} = {
+  heading: "DevOps & Cloud",
+  description: "From commit to production: how code is built, packaged, shipped, deployed and kept running.",
+  stages: [
+    {
+      title: "Source",
+      caption: "Version control and review",
+      icon: "source",
+      tools: [{ name: "Git" }, { name: "GitHub" }, { name: "Pull Requests", fallback: "pullrequest" }],
+    },
+    {
+      title: "Build",
+      caption: "Package and verify",
+      icon: "build",
+      tools: [{ name: "Vite" }, { name: "npm" }, { name: "ESLint" }, { name: "Docker Desktop" }],
+    },
+    {
+      title: "Automate",
+      caption: "CI/CD and image registry",
+      icon: "automate",
+      tools: [{ name: "GitHub Actions" }, { name: "CI/CD", fallback: "cicd" }, { name: "Docker Hub" }],
+    },
+    {
+      title: "Deploy",
+      caption: "Provision and release",
+      icon: "deploy",
+      tools: [{ name: "Terraform" }, { name: "Kubernetes" }, { name: "Vercel" }, { name: "Hostinger", fallback: "server" }],
+    },
+    {
+      title: "Operate",
+      caption: "Scale and keep it running",
+      icon: "operate",
+      tools: [{ name: "Load Balancer", fallback: "balancer" }, { name: "Nginx" }, { name: "Linux" }, { name: "Bash" }],
+    },
+  ],
+  clouds: [
+    {
+      name: "AWS",
+      summary: "Cloud infrastructure for hosting, storage and delivery.",
+      services: ["EC2", "S3", "IAM", "CloudFront", "Route 53", "ELB"],
+      hue: "#FF9900",
+    },
+    {
+      name: "Google Cloud (GCP)",
+      summary: "Managed compute, storage and serverless on Google's platform.",
+      services: ["Compute Engine", "Cloud Run", "Cloud Storage", "Cloud Functions", "GKE", "IAM"],
+      hue: "#4285F4",
+    },
+  ],
+};
+
+export const agentic: {
+  heading: string;
+  description: string;
+  stages: PipelineStage[];
+  frameworks: PipelineItem[];
+} = {
+  heading: "Agentic AI",
+  description:
+    "Building AI agents that plan, call tools and check their own work, instead of answering one prompt at a time.",
+  stages: [
+    {
+      title: "Perceive",
+      caption: "Goals, context and data",
+      icon: "perceive",
+      tools: [{ name: "Prompts", fallback: "brain" }, { name: "RAG", fallback: "rag" }, { name: "Embeddings", fallback: "database" }, { name: "Pinecone" }],
+    },
+    {
+      title: "Plan",
+      caption: "Reason and break down tasks",
+      icon: "plan",
+      tools: [{ name: "LLM Reasoning", fallback: "brain" }, { name: "Task Decomposition", fallback: "loop" }, { name: "ReAct", fallback: "loop" }],
+    },
+    {
+      title: "Act",
+      caption: "Call tools and APIs",
+      icon: "act",
+      tools: [{ name: "Tool Calling", fallback: "plug" }, { name: "Model Context Protocol", fallback: "mcp" }, { name: "Code Execution", fallback: "code" }],
+    },
+    {
+      title: "Reflect",
+      caption: "Check, remember, improve",
+      icon: "reflect",
+      tools: [{ name: "Memory", fallback: "memory" }, { name: "Evals", fallback: "eval" }, { name: "Guardrails", fallback: "guard" }, { name: "Human-in-the-loop", fallback: "human" }],
+    },
+  ],
+  frameworks: [
+    { name: "LangChain" },
+    { name: "LangGraph", fallback: "agents" },
+    { name: "CrewAI" },
+    { name: "AutoGen", fallback: "agents" },
+    { name: "LlamaIndex" },
+    { name: "n8n" },
+    { name: "Hugging Face" },
+    { name: "Ollama" },
+    { name: "FAISS", fallback: "database" },
+  ],
+};
 
 export const projects: Project[] = [
   {
@@ -315,3 +569,34 @@ export const certificates: Certificate[] = [
     credentialUrl: "",
   },
 ];
+
+export const about = {
+  eyebrow: "About me",
+  title: "Building useful software, end to end",
+  paragraphs: [
+    "I'm a Software Engineering student at FAST-NUCES Lahore (2023 – 2027) who enjoys turning ideas into products people actually use — from the interface down to the API and database.",
+    "Alongside my degree I've completed three internships, shipped a live MERN website for a real client, and led teams as Project Captain at Quantum Logics. I care about clean code, clear communication and getting things over the line.",
+  ],
+  focus: [
+    {
+      title: "Full-stack web",
+      text: "React, Node.js, Express and MongoDB applications, built from UI to API.",
+    },
+    {
+      title: "AI & NLP",
+      text: "Semantic search and RAG chatbots with Python, Flask, FAISS and BERT.",
+    },
+    {
+      title: "Real-world delivery",
+      text: "A live client site, team leadership and measurable performance wins.",
+    },
+  ],
+} as const;
+
+/** Headline numbers, derived from the data above so they can never drift out of date. */
+export const stats = [
+  { value: projects.length, label: "Projects built", suffix: "" },
+  { value: experience.length, label: "Internships", suffix: "" },
+  { value: certificates.length, label: "Certifications", suffix: "" },
+  { value: 2027, label: "Graduating", suffix: "", noCount: true },
+] as const;

@@ -1,172 +1,133 @@
-import { useEffect, useRef } from "react";
-import { Github, ExternalLink, ArrowRight, ArrowUpRight } from "lucide-react";
+import { useRef } from "react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ReactBitsText from "@/components/ui/ReactBitsText";
-import { prefersReducedMotion } from "@/lib/motion";
+import SectionHeader from "@/components/ui/SectionHeader";
+import { EASE, gsap, useGsap } from "@/lib/animations";
+import { useSpotlight } from "@/lib/pointerFx";
+import ProjectCard from "./ProjectCard";
+import ProjectFeatured from "./ProjectFeatured";
+import "@/styles/projects.css";
 
-gsap.registerPlugin(ScrollTrigger);
+const LIMIT = 6;
 
 export default function Projects() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion()) return;
+  const shown = projects.slice(0, LIMIT);
+  const featured = shown.find((p) => p.featured) ?? shown[0];
+  const rest = shown.filter((p) => p !== featured);
+  const hasMore = projects.length > LIMIT;
 
-    const ctx = gsap.context(() => {
-      const title = headerRef.current?.querySelector("h2");
-      const description = headerRef.current?.querySelector("p:last-child");
+  useSpotlight(sectionRef);
 
-      // Clipped editorial reveal
-      if (title) {
-        gsap.from(title, {
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          y: 28,
-          clipPath: "inset(0 100% 0 0)",
-          duration: 0.8,
-          ease: "power3.out",
+  useGsap(sectionRef, (helpers, root) => {
+    const { reveal, parallax } = helpers;
+
+    // Featured card: card fades up, screenshot stage slides in with a clipped reveal, copy staggers.
+    const feat = root.querySelector<HTMLElement>(".pfeatured");
+    if (feat) {
+      const stage = feat.querySelector(".pfeatured-stage");
+      const frame = feat.querySelector(".pfeatured-frame");
+      const view = feat.querySelector(".bframe-view");
+      const copy = feat.querySelectorAll("[data-fx]");
+
+      const tl = gsap.timeline({
+        defaults: { ease: EASE.out },
+        scrollTrigger: { trigger: feat, start: "top 82%", once: true },
+      });
+      tl.fromTo(feat, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, clearProps: "opacity,transform" }, 0);
+      if (stage) {
+        tl.fromTo(
+          stage,
+          { opacity: 0, y: 48, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: EASE.expo, clearProps: "opacity,transform" },
+          0.12
+        );
+      }
+      if (view) {
+        tl.fromTo(
+          view,
+          { clipPath: "inset(0 0 100% 0)" },
+          { clipPath: "inset(0 0 0% 0)", duration: 1.1, ease: EASE.inOut, clearProps: "clipPath" },
+          0.4
+        );
+      }
+      if (copy.length) {
+        tl.fromTo(
+          copy,
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.7, stagger: 0.08, clearProps: "opacity,transform" },
+          0.25
+        );
+      }
+      reveal(feat.querySelectorAll(".ptags li"), {
+        y: 10,
+        scale: 0.8,
+        stagger: 0.04,
+        duration: 0.5,
+        delay: 0.5,
+        trigger: feat,
+        start: "top 82%",
+      });
+      // The frame floats gently against the stage as you scroll.
+      parallax(frame, 28, feat);
+    }
+
+    // Grid cards: staggered reveal, then each card's tags cascade in.
+    const grid = gridRef.current;
+    if (grid) {
+      const cards = Array.from(grid.children);
+      reveal(cards, { y: 48, stagger: 0.1, trigger: grid });
+      cards.forEach((card) => {
+        reveal(card.querySelectorAll(".ptags li"), {
+          y: 8,
+          scale: 0.8,
+          stagger: 0.035,
+          duration: 0.5,
+          delay: 0.35,
+          trigger: card,
+          start: "top 84%",
         });
-      }
-      if (description) {
-        gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, x: -18, duration: 0.7, delay: 0.15, ease: "power2.out" });
-      }
-
-      // Cards stagger
-      const cards = gridRef.current?.querySelectorAll(".project-item");
-      if (cards && cards.length > 0) {
-        gsap.from(cards, {
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          y: 60,
-          stagger: 0.1,
-          duration: 0.8,
-          ease: "power3.out",
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Show top 6 projects
-  const displayProjects = projects.slice(0, 6);
+      });
+    }
+  });
 
   return (
-    <section ref={sectionRef} id="projects" className="section section-projects">
+    <section ref={sectionRef} id="projects" className="section section-alt projects" aria-labelledby="projects-title">
       <div className="container-custom">
-        {/* Header */}
-        <div ref={headerRef} className="max-w-3xl mb-16">
-          <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
-            Selected Work
-          </p>
-          <ReactBitsText text="Projects" variant="tracking" className="text-heading mb-6" />
-          <p className="text-body-large">
-            A collection of projects showcasing full-stack development, AI integration, and modern web technologies.
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Selected Work"
+          title="Projects"
+          description="A collection of projects showcasing full-stack development, AI integration, and modern web technologies."
+          titleId="projects-title"
+        />
 
-        {/* Projects Grid */}
-        <div ref={gridRef} className="grid-minimal mb-12">
-          {displayProjects.map((project, index) => (
-            <article
-              key={project.id}
-              className="project-item project-card group"
-            >
-              <div className="project-card-accent" />
-              <div className="project-card-body">
-                <div className="project-card-header">
-                  <span className="project-card-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                  {project.category && (
-                    <span className="project-card-category">{project.category}</span>
-                  )}
-                </div>
-
-                <h3 className="project-card-title">
-                  {project.title}
-                </h3>
-
-                <p className="project-card-description">
-                  {project.description}
-                </p>
-
-                {project.highlights && project.highlights.length > 0 && (
-                  <ul className="project-card-highlights">
-                    {project.highlights.slice(0, 2).map((highlight, idx) => (
-                      <li key={idx}>
-                        <span className="project-card-bullet" aria-hidden="true" />
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-              <div className="project-card-tags">
-                {project.tags.slice(0, 5).map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-
-              <div className="project-card-actions">
-                {project.github && (
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-card-link"
-                    aria-label={`${project.title} — source code on GitHub (opens in a new tab)`}
-                  >
-                    <Github size={16} aria-hidden="true" />
-                    Code
-                  </a>
-                )}
-                {project.live && (
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-card-link project-card-link-primary"
-                    aria-label={`${project.title} — live demo (opens in a new tab)`}
-                  >
-                    <ExternalLink size={16} aria-hidden="true" />
-                    Live demo
-                    <ArrowUpRight size={14} aria-hidden="true" />
-                  </a>
-                )}
-              </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* View All Link */}
-        {projects.length > 6 && (
-          <div className="projects-footer">
-            <Link
-              to="/projects"
-              className="inline-flex items-center gap-2 hover-underline text-lg font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
-              <span>View all projects</span>
-              <ArrowRight size={20} aria-hidden="true" />
-            </Link>
+        {featured && (
+          <div className="projects-featured">
+            <ProjectFeatured project={featured} />
           </div>
         )}
-      </div>
 
-      {/* Divider */}
-      <div className="container-custom mt-24">
-        <div className="line" />
+        <div ref={gridRef} className="pgrid">
+          {rest.map((project) => (
+            <ProjectCard key={project.id} project={project} index={projects.indexOf(project)} />
+          ))}
+          {hasMore && (
+            <Link to="/projects" className="pcard pcard-cta card card-interactive spotlight">
+              <span className="pcta-icon" aria-hidden="true">
+                <ArrowRight size={26} strokeWidth={2} />
+              </span>
+              <h3 className="pcta-title">View all projects</h3>
+              <p className="pcta-desc">Browse all {projects.length} projects, from client work to AI and systems experiments.</p>
+              <span className="pcta-link" aria-hidden="true">
+                Open the archive
+                <ArrowRight size={16} className="pcta-arrow" />
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
     </section>
   );

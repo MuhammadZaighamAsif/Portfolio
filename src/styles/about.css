@@ -1,0 +1,76 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ABOUT  (src/components/portfolio/About.tsx)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.about { overflow-x: clip; }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.5rem, 5vw, 3.5rem);
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(3rem, 6vw, 5.5rem);
+  }
+  .about-copy { position: sticky; top: calc(var(--nav-h) + 2rem); }
+}
+
+.about-copy .section-header { margin-bottom: 1.75rem; }
+
+.about-text { display: grid; gap: 1.15rem; max-width: 36rem; }
+.about-text p { color: var(--text-secondary); font-size: 1.02rem; line-height: 1.75; }
+.about-text .about-lede {
+  color: var(--text-primary);
+  font-size: clamp(1.1rem, 1.9vw, 1.25rem);
+  line-height: 1.65;
+  font-weight: 500;
+}
+
+.about-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* ── Focus cards ── */
+.about-cards { display: grid; gap: 1.1rem; list-style: none; margin: 0; padding: 0; counter-reset: focus; }
+.about-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  counter-increment: focus;
+}
+.about-card-icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  background: var(--accent-soft-strong);
+  color: var(--accent);
+  transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out), rotate 0.5s var(--ease-out), scale 0.5s var(--ease-out);
+}
+.about-card:hover .about-card-icon {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  rotate: -6deg;
+  scale: 1.06;
+}
+.about-card-title { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); }
+.about-card-text { margin-top: 0.35rem; color: var(--text-secondary); font-size: 0.98rem; line-height: 1.65; }
+.about-card::after {
+  content: "0" counter(focus);
+  position: absolute;
+  top: 1.1rem;
+  right: 1.35rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+@media (max-width: 420px) {
+  .about-card { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+}

@@ -1,138 +1,108 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Award, Calendar, ExternalLink } from "lucide-react";
 import { certificates } from "@/data/portfolio";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ReactBitsText from "@/components/ui/ReactBitsText";
-import DriftWall from "@/components/ui/DriftWall";
-import { prefersReducedMotion } from "@/lib/motion";
+import SectionHeader from "@/components/ui/SectionHeader";
+import { gsap, useGsap } from "@/lib/animations";
+import { useSpotlight, useTilt } from "@/lib/pointerFx";
+import "@/styles/certificates.css";
 
-gsap.registerPlugin(ScrollTrigger);
+type Certificate = (typeof certificates)[number];
 
-export default function Certificates() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+/** Number of distinct accent hues defined in certificates.css (data-hue="0".."3"). */
+const HUES = 4;
 
-  useEffect(() => {
-    if (!sectionRef.current || prefersReducedMotion()) return;
+// Each issuer gets a stable hue, assigned in order of first appearance.
+const issuers = Array.from(new Set(certificates.map((c) => c.issuer)));
+const hueOf = (issuer: string) => issuers.indexOf(issuer) % HUES;
 
-    const ctx = gsap.context(() => {
-      const description = headerRef.current?.querySelector("p:last-child");
-
-      if (description) {
-        gsap.from(description, { scrollTrigger: { trigger: headerRef.current, start: "top 80%" }, y: 14, duration: 0.7, delay: 0.15, ease: "power2.out" });
-      }
-
-      const items = gridRef.current?.querySelectorAll(".cert-item");
-      if (items && items.length > 0) {
-        gsap.from(items, {
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-          y: 50,
-          stagger: 0.08,
-          duration: 0.8,
-          ease: "power3.out",
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+function CertificateCard({ cert }: { cert: Certificate }) {
+  const cardRef = useRef<HTMLElement>(null);
+  useTilt(cardRef, 4);
 
   return (
-    <section ref={sectionRef} id="certificates" className="section section-certificates">
-      <DriftWall
-        items={certificates.map((certificate, index) => ({
-          image: "/placeholder.svg",
-          title: certificate.issuer,
-          label: certificate.title,
-          background: [
-            "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04))",
-            "linear-gradient(135deg, rgba(20,20,20,0.85), rgba(28,28,28,0.6))",
-            "linear-gradient(135deg, rgba(62,62,62,0.8), rgba(17,17,17,0.7))",
-            "linear-gradient(135deg, rgba(80,80,80,0.72), rgba(24,24,24,0.82))",
-          ][index % 4],
-        }))}
-        columns={4}
-        tileWidth={190}
-        tileHeight={120}
-        gap={14}
-        speed={32}
-      />
-      <div className="container-custom">
-        {/* Header */}
-        <div ref={headerRef} className="max-w-3xl mb-16">
-          <p className="text-caption mb-4" style={{ color: "var(--accent)" }}>
-            Credentials
-          </p>
-          <ReactBitsText text="Certificates" variant="split" className="text-heading mb-6" />
-          <p className="text-body-large">
-            Verified achievements from leading platforms and institutions.
-          </p>
+    <li className="cert-cell">
+      <article ref={cardRef} className="cert-card card card-interactive spotlight" data-hue={hueOf(cert.issuer)}>
+        <div className="cert-top">
+          <span className="cert-tile" aria-hidden="true">
+            {cert.issuer.charAt(0).toUpperCase()}
+          </span>
+          <Award className="cert-award" size={20} aria-hidden="true" />
         </div>
 
-        {/* Certificates Grid */}
-        <div ref={gridRef} className="grid-minimal">
-          {certificates.map((cert) => (
-            <article
-              key={cert.title}
-              className="cert-item certificate-card card-minimal"
+        <h3 className="cert-title">{cert.title}</h3>
+        <p className="cert-source">
+          <span className="cert-issuer">{cert.issuer}</span>
+          <span className="sr-only"> on </span>
+          <span className="chip chip-neutral cert-platform">{cert.platform}</span>
+        </p>
+
+        <div className="cert-foot">
+          <span className="cert-date">
+            <Calendar size={14} aria-hidden="true" />
+            {cert.date}
+          </span>
+          {cert.credentialUrl && (
+            <a
+              href={cert.credentialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cert-verify hover-underline"
+              aria-label={`Verify ${cert.title} credential (opens in a new tab)`}
             >
-              <div className="certificate-card-top flex items-start gap-4 mb-4">
-                <div
-                  className="certificate-icon w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{
-                    background: "var(--accent)",
-                    color: "var(--bg-primary)",
-                  }}
-                >
-                  <Award size={18} aria-hidden="true" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
-                    {cert.title}
-                  </h3>
-                  <p className="text-sm font-medium mb-1" style={{ color: "var(--accent)" }}>
-                    {cert.issuer}
-                  </p>
-                  <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                    {cert.platform}
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="certificate-card-footer flex items-center justify-between pt-4 border-t" style={{ borderColor: "var(--border-color)" }}>
-                <span className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <Calendar size={14} aria-hidden="true" />
-                  {cert.date}
-                </span>
-                {cert.credentialUrl && (
-                  <a
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm hover-underline transition-opacity hover:opacity-70"
-                    style={{ color: "var(--accent)" }}
-                    aria-label={`Verify ${cert.title} credential (opens in a new tab)`}
-                  >
-                    <ExternalLink size={14} aria-hidden="true" />
-                    Verify
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
+              <ExternalLink size={14} aria-hidden="true" />
+              Verify
+            </a>
+          )}
         </div>
-      </div>
+      </article>
+    </li>
+  );
+}
 
-      {/* Divider */}
-      <div className="container-custom mt-24">
-        <div className="line" />
+export default function Certificates() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLUListElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
+
+  useSpotlight(gridRef, ".cert-card");
+
+  useGsap(sectionRef, (helpers, root) => {
+    helpers.countUp(countRef.current, certificates.length, { duration: 1.1, start: "top 92%" });
+
+    const cells = gsap.utils.toArray<HTMLElement>(".cert-cell", root);
+    // Stagger by column within each row so cards that are scrolled to later still cascade nicely.
+    const lefts = Array.from(new Set(cells.map((c) => c.offsetLeft))).sort((a, b) => a - b);
+    cells.forEach((cell) => {
+      const col = lefts.indexOf(cell.offsetLeft);
+      helpers.reveal(cell, { y: 38, scale: 0.94, duration: 0.85, delay: col * 0.09, start: "top 90%" });
+    });
+  });
+
+  return (
+    <section ref={sectionRef} id="certificates" className="section certs" aria-labelledby="certificates-title">
+      <div className="container-custom">
+        <SectionHeader
+          eyebrow="Credentials"
+          title="Certificates"
+          description="Verified achievements from leading platforms and institutions."
+          titleId="certificates-title"
+        />
+
+        <p className="cert-count">
+          <span className="cert-count-num" ref={countRef}>
+            {certificates.length}
+          </span>{" "}
+          {certificates.length === 1 ? "certification" : "certifications"}
+          <span aria-hidden="true"> · </span>
+          <span className="sr-only">from </span>
+          {issuers.length} {issuers.length === 1 ? "issuer" : "issuers"}
+        </p>
+
+        <ul ref={gridRef} className="cert-grid">
+          {certificates.map((cert) => (
+            <CertificateCard key={cert.title} cert={cert} />
+          ))}
+        </ul>
       </div>
     </section>
   );

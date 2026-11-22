@@ -1,14 +1,7 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Muhammad Zaigham Asif — portfolio. Everything public is crawlable.
+# Personal documents (offer letters, certificates) are kept out of search results
+# with an X-Robots-Tag header (see vercel.json); they are intentionally NOT blocked
+# here, because a robots.txt block would stop crawlers from ever seeing that header.
 
 User-agent: *
 Allow: /

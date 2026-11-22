@@ -1,240 +1,203 @@
 import { useLayoutEffect, useRef } from "react";
-import { ArrowRight, Mail, MapPin, Download, Github, Linkedin } from "lucide-react";
-import { meta } from "@/data/portfolio";
+import { ArrowRight, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
+import { meta, stats } from "@/data/portfolio";
 import { showAchievement } from "@/lib/achievement";
-import gsap from "gsap";
-import { prefersReducedMotion, scrollToSection } from "@/lib/motion";
+import { EASE, gsap, splitWords, useGsap } from "@/lib/animations";
+import { scrollToSection } from "@/lib/motion";
+import { useMagnetic } from "@/lib/pointerFx";
+import ProfilePhoto from "./ProfilePhoto";
+import RoleRotator from "./RoleRotator";
+import "@/styles/hero.css";
 
 export default function Hero() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const roleRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const metaRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const socialRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
+  const primaryRef = useRef<HTMLButtonElement>(null);
+  useMagnetic(primaryRef, 0.22);
 
-  // Layout effect so initial states are applied before first paint (no flash of un-animated content).
-  useLayoutEffect(() => {
-    if (prefersReducedMotion()) return;
+  useGsap(rootRef, (helpers, root) => {
+    const q = <T extends Element = HTMLElement>(sel: string) => Array.from(root.querySelectorAll<T>(sel));
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    const tl = gsap.timeline({ defaults: { ease: EASE.out } });
+    const show = (targets: gsap.TweenTarget, from: gsap.TweenVars, dur: number, at: number, extra: gsap.TweenVars = {}) =>
+      tl.fromTo(
+        targets,
+        { opacity: 0, ...from },
+        { opacity: 1, y: 0, x: 0, scale: 1, duration: dur, clearProps: "opacity,transform", ...extra },
+        at
+      );
 
-      // Falling letters animation (letters are rendered by React below)
-      const letters = nameRef.current?.querySelectorAll("[data-letter]");
-      if (letters && letters.length > 0) {
-        tl.fromTo(
-          letters,
-          {
-            y: -100,
-            opacity: 0,
-            rotation: () => gsap.utils.random(-15, 15),
+    // Background fades up first, then everything else is choreographed top → bottom.
+    tl.fromTo(".hero-bg", { opacity: 0 }, { opacity: 1, duration: 1.4, ease: EASE.outSoft, clearProps: "opacity" }, 0);
+    show(".hero-badge", { y: 14 }, 0.7, 0.05);
+
+    // Name: each word slides up from behind its own clip mask (no bounce).
+    tl.fromTo(
+      q(".hero-word-inner"),
+      { yPercent: 115, rotate: 4 },
+      { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.09, ease: EASE.expo, clearProps: "transform" },
+      0.14
+    );
+
+    show(".hero-role", { y: 16 }, 0.8, 0.62);
+    show(".hero-lede", { y: 18 }, 0.8, 0.74);
+    show(q(".hero-cta"), { y: 20 }, 0.7, 0.86, { stagger: 0.08 });
+    show(".hero-meta", { y: 16 }, 0.7, 1.0);
+    show(q(".hero-stat"), { y: 18 }, 0.7, 1.1, { stagger: 0.07 });
+
+    // Counters run inside the same timeline so they start exactly as the stats appear.
+    q(".hero-stat-value[data-count]").forEach((el, i) => {
+      const to = Number(el.dataset.count);
+      const suffix = el.dataset.suffix ?? "";
+      const state = { v: 0 };
+      el.textContent = `0${suffix}`;
+      tl.to(
+        state,
+        {
+          v: to,
+          duration: 0.95,
+          ease: "power2.out",
+          onUpdate: () => {
+            el.textContent = `${Math.round(state.v)}${suffix}`;
           },
-          {
-            y: 0,
-            opacity: 1,
-            rotation: 0,
-            stagger: 0.03,
-            duration: 0.8,
-            ease: "bounce.out",
-          }
-        );
-      }
+          onComplete: () => {
+            el.textContent = `${to}${suffix}`;
+          },
+        },
+        1.15 + i * 0.07
+      );
+    });
 
-      // Everything below uses explicit fromTo() end states (opacity 1 / no offset) instead of from().
-      // from() infers its end state from the element's *current* computed style, which is unreliable
-      // for elements that also carry a CSS `transition` (the CTA buttons and social icons).
-      // clearProps hands control back to CSS once each reveal finishes, so hover styles keep working.
-      const reveal = (
-        targets: gsap.TweenTarget,
-        from: gsap.TweenVars,
-        vars: gsap.TweenVars,
-        position: string
-      ) => {
-        // Hide immediately (before first paint) so nothing flashes while earlier tweens play.
-        gsap.set(targets, { opacity: 0, ...from });
-        tl.fromTo(
-          targets,
-          { opacity: 0, ...from },
-          { opacity: 1, y: 0, scale: 1, clearProps: "opacity,transform", ...vars },
-          position
-        );
-      };
+    // Photo: plate scales in, photo wipes up inside its frame while slowly settling, glow fades up.
+    show(".hp-stage", { y: 28, scale: 0.94 }, 1.3, 0.22, { ease: EASE.expo });
+    tl.fromTo(
+      ".hp-frame",
+      { clipPath: "inset(100% 0% 0% 0% round 28px)" },
+      { clipPath: "inset(0% 0% 0% 0% round 28px)", duration: 1.25, ease: EASE.inOut, clearProps: "clipPath" },
+      0.3
+    );
+    tl.fromTo(".hp-frame img", { scale: 1.22 }, { scale: 1, duration: 1.8, ease: EASE.out, clearProps: "transform" }, 0.3);
+    tl.fromTo(".hp-glow", { opacity: 0 }, { opacity: 0.55, duration: 1.5, ease: EASE.outSoft, clearProps: "opacity" }, 0.35);
+    show(q(".hp-chip"), { y: 14, scale: 0.9 }, 0.8, 1.15, { stagger: 0.12 });
+    show(".hero-cue", { y: -8 }, 0.8, 1.7, { ease: EASE.outSoft });
 
-      // Role badge, subtitle and meta line
-      if (roleRef.current) reveal(roleRef.current, { y: 30 }, { duration: 0.8 }, "-=0.3");
-      if (subtitleRef.current) reveal(subtitleRef.current, { y: 30 }, { duration: 0.8 }, "-=0.5");
-      if (metaRef.current) reveal(metaRef.current, { y: 20 }, { duration: 0.6 }, "-=0.4");
+    // Scroll: the photo drifts slightly slower than the page.
+    helpers.parallax(root.querySelector(".hp"), 56, root);
+  });
 
-      // Stagger CTA buttons
-      const ctaItems = ctaRef.current ? Array.from(ctaRef.current.children) : [];
-      if (ctaItems.length > 0) {
-        reveal(ctaItems, { y: 20 }, { stagger: 0.1, duration: 0.5 }, "-=0.3");
-      }
-
-      // Social icons
-      const socialItems = socialRef.current ? Array.from(socialRef.current.children) : [];
-      if (socialItems.length > 0) {
-        reveal(
-          socialItems,
-          { scale: 0 },
-          { stagger: 0.08, duration: 0.4, ease: "back.out(1.7)" },
-          "-=0.2"
-        );
-      }
-    }, heroRef);
-
-    return () => ctx.revert();
+  // The counters overwrite textContent; restore the real values if the effect is torn down mid-count.
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    return () => {
+      root?.querySelectorAll<HTMLElement>(".hero-stat-value[data-count]").forEach((el) => {
+        el.textContent = `${el.dataset.count ?? ""}${el.dataset.suffix ?? ""}`;
+      });
+    };
   }, []);
 
   return (
-    <section
-      ref={heroRef}
-      id="hero"
-      className="min-h-screen flex items-center justify-center relative"
-      style={{ paddingTop: "100px", paddingBottom: "100px" }}
-    >
-      <div className="container-custom w-full">
-        <div className="max-w-6xl mx-auto text-center">
-          {/* Name with falling letters effect (aria-label keeps the heading readable as one string) */}
-          <h1
-            ref={nameRef}
-            aria-label={meta.name}
-            className="text-display mb-6 leading-none font-bold"
-            style={{
-              minHeight: "1.2em",
-              color: "var(--text-primary)",
-              fontSize: "clamp(1.6rem, 7.5vw, 5rem)",
-              letterSpacing: "-0.04em",
-            }}
-          >
-            {meta.name.split(" ").map((word, wordIndex, words) => (
-              <span key={`${word}-${wordIndex}`} aria-hidden="true">
-                <span className="inline-block whitespace-nowrap">
-                  {word.split("").map((char, charIndex) => (
-                    <span key={charIndex} data-letter className="inline-block">
-                      {char}
-                    </span>
-                  ))}
+    <section ref={rootRef} id="hero" className="hero" aria-labelledby="hero-title">
+      <div className="hero-bg" aria-hidden="true">
+        <div className="hero-grid" />
+        <div className="hero-blob hero-blob--a" />
+        <div className="hero-blob hero-blob--b" />
+        <div className="hero-blob hero-blob--c" />
+      </div>
+
+      <div className="container-custom hero-inner">
+        <div className="hero-copy">
+          <p className="hero-badge">
+            <span className="status-dot" aria-hidden="true" />
+            {meta.availability}
+          </p>
+
+          <h1 id="hero-title" className="hero-name">
+            {splitWords(meta.name).map((word, i, all) => (
+              <span key={`${word}-${i}`}>
+                <span className="hero-word">
+                  <span className="hero-word-inner">{word}</span>
                 </span>
-                {wordIndex < words.length - 1 ? " " : null}
+                {i < all.length - 1 ? " " : null}
               </span>
             ))}
           </h1>
 
-          {/* Role */}
-          <div
-            ref={roleRef}
-            className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-medium border border-current rounded-full"
-            style={{ color: "var(--accent)" }}
-          >
-            {meta.title}
-          </div>
+          <RoleRotator />
 
-          {/* Subtitle */}
-          <p
-            ref={subtitleRef}
-            className="text-body-large max-w-3xl mx-auto mb-12 text-left"
-            style={{ color: "var(--text-secondary)", lineHeight: 1.75 }}
-          >
-            {meta.subtitle}
-          </p>
+          <p className="hero-lede">{meta.tagline}</p>
 
-          {/* Meta info */}
-          <div
-            ref={metaRef}
-            className="flex flex-wrap items-center justify-center gap-6 mb-12 text-sm"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            <span className="flex items-center gap-2">
-              <MapPin size={16} />
-              {meta.location}
-            </span>
-            <span className="hover-underline">
-              <a href={`mailto:${meta.email}`} className="flex items-center gap-2">
-                <Mail size={16} />
-                {meta.email}
+          <div className="hero-ctas">
+            <div className="hero-cta">
+              <button
+                ref={primaryRef}
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={() => scrollToSection("projects")}
+              >
+                View my work
+                <ArrowRight size={18} className="btn-arrow" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="hero-cta">
+              <a
+                href="/resume.pdf"
+                download="Zaigham_Resume.pdf"
+                className="btn btn-secondary btn-lg"
+                onClick={() => showAchievement("Resume downloaded", "Thanks for checking out my work!")}
+              >
+                <Download size={17} aria-hidden="true" />
+                Download CV
               </a>
-            </span>
+            </div>
+            <div className="hero-cta">
+              <button type="button" className="btn btn-ghost btn-lg" onClick={() => scrollToSection("contact")}>
+                Get in touch
+              </button>
+            </div>
           </div>
 
-          {/* CTA Buttons */}
-          <div ref={ctaRef} className="flex flex-wrap items-center justify-center gap-4 mb-16">
-            <button 
-              type="button"
-              onClick={() => scrollToSection("projects")} 
-              className="inline-flex items-center gap-2 px-6 py-3 font-medium transition-all group"
-              style={{
-                background: "var(--text-primary)",
-                color: "var(--bg-primary)"
-              }}
-            >
-              <span>View Projects</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-            </button>
-            <button 
-              type="button"
-              onClick={() => scrollToSection("contact")} 
-              className="inline-flex items-center gap-2 px-6 py-3 border font-medium transition-all hover:border-opacity-70"
-              style={{
-                borderColor: "var(--border-color)",
-                color: "var(--text-primary)"
-              }}
-            >
-              <span>Get in Touch</span>
-            </button>
-            <a
-              href="/resume.pdf"
-              download="Zaigham_Resume.pdf"
-              className="inline-flex items-center gap-2 px-6 py-3 border font-medium transition-all hover:border-opacity-70"
-              style={{
-                borderColor: "var(--border-color)",
-                color: "var(--text-primary)"
-              }}
-              onClick={() => showAchievement("Resume Downloaded", "Thanks!")}
-            >
-              <span>Resume</span>
-              <Download size={16} aria-hidden="true" />
-            </a>
+          <div className="hero-meta">
+            <div className="hero-socials">
+              <a href={meta.github} target="_blank" rel="noopener noreferrer" className="icon-btn" aria-label="GitHub (opens in a new tab)">
+                <Github size={18} aria-hidden="true" />
+              </a>
+              <a href={meta.linkedin} target="_blank" rel="noopener noreferrer" className="icon-btn" aria-label="LinkedIn (opens in a new tab)">
+                <Linkedin size={18} aria-hidden="true" />
+              </a>
+            </div>
+            <ul className="hero-meta-list">
+              <li>
+                <MapPin size={16} aria-hidden="true" />
+                {meta.location}
+              </li>
+              <li>
+                <Mail size={16} aria-hidden="true" />
+                <a href={`mailto:${meta.email}`}>{meta.email}</a>
+              </li>
+            </ul>
           </div>
 
-          {/* Social Links */}
-          <div ref={socialRef} className="flex items-center justify-center gap-4">
-            <a
-              href={meta.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero-social-link w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all group"
-              style={{ color: "var(--text-secondary)" }}
-              aria-label="GitHub"
-            >
-              <Github size={18} className="group-hover:scale-110 transition-transform" />
-            </a>
-            <a
-              href={meta.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero-social-link w-10 h-10 flex items-center justify-center border border-current rounded-full transition-all group"
-              style={{ color: "var(--text-secondary)" }}
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={18} className="group-hover:scale-110 transition-transform" />
-            </a>
-          </div>
+          <ul className="hero-stats" aria-label="At a glance">
+            {stats.map((s) => (
+              <li key={s.label} className="hero-stat">
+                <span
+                  className="hero-stat-value"
+                  data-count={"noCount" in s && s.noCount ? undefined : s.value}
+                  data-suffix={s.suffix}
+                >
+                  {`${s.value}${s.suffix}`}
+                </span>
+                <span className="hero-stat-label">{s.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <ProfilePhoto />
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2" aria-hidden="true">
-        <div
-          className="w-px h-12"
-          style={{
-            background: "linear-gradient(to bottom, transparent, var(--text-tertiary), transparent)",
-            animation: "fadeIn 1s 2s both, pulse 2s 2.5s infinite",
-          }}
-        />
-      </div>
+      <button type="button" className="hero-cue" aria-label="Scroll to the About section" onClick={() => scrollToSection("about")}>
+        <span className="hero-cue-mouse" aria-hidden="true" />
+      </button>
     </section>
   );
 }

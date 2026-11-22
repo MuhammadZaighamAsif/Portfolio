@@ -1,0 +1,433 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   HERO  (src/components/portfolio/Hero.tsx + ProfilePhoto.tsx)
+   Elements animated by GSAP (badge, words, role, lede, ctas, stats, photo layers)
+   carry NO css transition on opacity/transform. Hover lifts use `translate`.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: calc(var(--nav-h) + clamp(1.5rem, 5vw, 3.5rem));
+  padding-bottom: clamp(4rem, 8vw, 6.5rem);
+  overflow-x: clip;
+}
+
+/* ── Background: drifting blobs + faint grid. Decorative, no layout impact ── */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--gradient-mesh);
+}
+.hero-bg::after {
+  /* fade into the next section */
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--bg-primary));
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.55;
+  -webkit-mask-image: radial-gradient(70% 60% at 50% 38%, #000 10%, transparent 75%);
+  mask-image: radial-gradient(70% 60% at 50% 38%, #000 10%, transparent 75%);
+}
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.55;
+  will-change: translate;
+}
+.hero-blob--a {
+  top: -12%;
+  left: -8%;
+  width: min(46vw, 640px);
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, var(--accent-soft-strong), transparent);
+  animation: hero-drift-a 22s ease-in-out infinite alternate;
+}
+.hero-blob--b {
+  top: 8%;
+  right: -10%;
+  width: min(40vw, 560px);
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent-2) 22%, transparent), transparent);
+  animation: hero-drift-b 26s ease-in-out infinite alternate;
+}
+.hero-blob--c {
+  bottom: -18%;
+  left: 38%;
+  width: min(42vw, 600px);
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, var(--accent-soft), transparent);
+  animation: hero-drift-c 30s ease-in-out infinite alternate;
+}
+@keyframes hero-drift-a { to { translate: 9vw 6vh; } }
+@keyframes hero-drift-b { to { translate: -8vw 9vh; } }
+@keyframes hero-drift-c { to { translate: -10vw -7vh; } }
+
+/* ── Layout ── */
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.5rem, 6vw, 4rem);
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .hero-inner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: clamp(2rem, 4vw, 4.5rem);
+  }
+}
+
+.hero-copy { min-width: 0; }
+
+/* ── Availability badge ── */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.95rem 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ── Name (masked word reveal) ── */
+.hero-name {
+  margin-top: 1.4rem;
+  font-size: clamp(2.7rem, 8.4vw, 5.1rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+.hero-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.04em 0.06em 0.16em;
+  margin: -0.04em -0.06em -0.16em;
+}
+.hero-word-inner { display: inline-block; will-change: transform; }
+
+/* ── Role line + rotating phrase ── */
+.hero-role {
+  margin-top: 1.15rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.4em;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--text-secondary);
+}
+.hero-rotator {
+  display: inline-grid;
+  overflow: hidden;
+  padding: 0.05em 0.04em 0.2em;
+  margin: -0.05em -0.04em -0.2em;
+  font-weight: 600;
+}
+.hero-rotator-item {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+  translate: 0 150%;
+  transition: opacity 0.45s var(--ease-out), translate 0.75s var(--ease-out);
+}
+.hero-rotator-item[data-state="active"] { opacity: 1; translate: 0 0; }
+.hero-rotator-item[data-state="leaving"] { opacity: 0; translate: 0 -150%; }
+
+/* ── Lede ── */
+.hero-lede {
+  margin-top: 1.4rem;
+  max-width: 34rem;
+  text-wrap: balance;
+  font-size: clamp(1.02rem, 1.7vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ── CTAs ── */
+.hero-ctas {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.hero-cta { display: inline-flex; }
+.hero-cta .btn { padding: 0.9rem 1.4rem; }
+@media (max-width: 559px) {
+  .hero-cta { flex: 1 1 calc(50% - 0.4rem); }
+  .hero-cta:first-child { flex-basis: 100%; }
+  .hero-cta .btn { width: 100%; padding-inline: 1rem; }
+}
+@media (min-width: 640px) {
+  .hero-cta .btn { padding: 1rem 1.7rem; font-size: 1rem; }
+  .hero-ctas { gap: 0.9rem; }
+}
+
+/* ── Socials + location + email ── */
+.hero-meta {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+.hero-socials { display: flex; gap: 0.6rem; }
+.hero-socials .icon-btn { width: 2.75rem; height: 2.75rem; }
+.hero-meta-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.hero-meta-list li { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.hero-meta-list svg { color: var(--accent); flex-shrink: 0; }
+.hero-meta-list a { overflow-wrap: anywhere; transition: color 0.25s var(--ease-out); }
+.hero-meta-list a:hover { color: var(--accent); }
+
+/* ── Stats strip ── */
+.hero-stats {
+  margin: clamp(2rem, 4vw, 2.75rem) 0 0;
+  padding: 1.5rem 0 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem 1rem;
+  border-top: 1px solid var(--border-color);
+}
+@media (min-width: 560px) {
+  .hero-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.hero-stat { display: flex; flex-direction: column; gap: 0.15rem; }
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.6vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.hero-stat-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.01em;
+}
+
+/* ── Scroll cue ── */
+.hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 2;
+  display: none;
+  translate: -50% 0;
+  width: 2.75rem;
+  height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--text-tertiary);
+  transition: color 0.25s var(--ease-out);
+}
+.hero-cue:hover { color: var(--accent); }
+.hero-cue-mouse {
+  position: relative;
+  width: 1.5rem;
+  height: 2.3rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+.hero-cue-mouse::after {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  left: 50%;
+  width: 3px;
+  height: 0.4rem;
+  margin-left: -1.5px;
+  border-radius: 3px;
+  background: currentColor;
+  animation: hero-cue 1.9s var(--ease-out) infinite;
+}
+@keyframes hero-cue {
+  0% { transform: translateY(0); opacity: 0; }
+  25% { opacity: 1; }
+  80%, 100% { transform: translateY(0.8rem); opacity: 0; }
+}
+@media (min-width: 1024px) and (min-height: 660px) {
+  .hero-cue { display: inline-flex; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PROFILE PHOTO
+   Layers (each owns ONE kind of motion so nothing fights):
+     .hp        GSAP parallax (y)
+     .hp-float  CSS float (translate)
+     .hp-stage  GSAP intro (opacity/scale/y)
+     .hp-tilt   GSAP tilt (rotationX/Y)
+     .hp-frame  GSAP clip-path wipe;  img: GSAP scale
+   ════════════════════════════════════════════════════════════════════════════ */
+.hp {
+  position: relative;
+  width: min(100%, 26rem);
+  margin-inline: auto;
+  padding: 0.5rem 0.75rem 1.25rem;
+}
+@media (min-width: 1024px) {
+  .hp { margin-inline: 0 0; margin-left: auto; }
+}
+@media (min-height: 700px) and (min-width: 1024px) {
+  .hp { width: min(100%, 26rem, 58svh * 0.8); }
+}
+
+.hp-glow {
+  position: absolute;
+  inset: -14% -22%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 40% at 30% 30%, var(--accent-glow), transparent 70%),
+    radial-gradient(40% 40% at 72% 72%, color-mix(in srgb, var(--accent-2) 55%, transparent), transparent 70%);
+  opacity: 0.55;
+}
+.hp-glow::before {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--accent-soft-strong), transparent);
+  animation: hp-pulse 7s ease-in-out infinite;
+}
+@keyframes hp-pulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.hp-float {
+  position: relative;
+  z-index: 1;
+  animation: hp-float 8s ease-in-out infinite;
+}
+@keyframes hp-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+.hp-stage { position: relative; }
+.hp-tilt { position: relative; }
+
+.hp-ring {
+  padding: 3px;
+  border-radius: calc(1.75rem + 3px);
+  background: var(--gradient-accent);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-color);
+}
+.hp-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 1.75rem;
+  background: var(--surface);
+  /* neutralises sub-pixel seams between ring and photo */
+  isolation: isolate;
+}
+.hp-frame picture,
+.hp-frame img { display: block; width: 100%; height: 100%; }
+.hp-frame img {
+  object-fit: cover;
+  object-position: 50% 18%;
+  will-change: transform;
+}
+.hp-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, color-mix(in srgb, var(--accent-strong) 34%, transparent) 0%, transparent 34%),
+    linear-gradient(155deg, var(--accent-soft) 0%, transparent 45%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 35%, transparent);
+  border-radius: inherit;
+}
+
+/* Floating info chips. They float with `translate`; GSAP only animates their intro. */
+.hp-chip {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.55rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  animation: hp-chip-float 6s ease-in-out infinite;
+  transition: border-color 0.25s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.hp-chip:hover { border-color: var(--accent); }
+.hp-chip-icon {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent-soft-strong);
+  color: var(--accent);
+}
+.hp-chip--tr { top: 7%; right: -0.5rem; animation-delay: -1.5s; }
+.hp-chip--bl { bottom: 11%; left: -0.5rem; animation-delay: -3.2s; animation-duration: 7s; }
+.hp-chip--br { bottom: -0.4rem; right: 8%; animation-delay: -4.6s; animation-duration: 6.5s; }
+@keyframes hp-chip-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
+}
+@media (min-width: 1024px) {
+  .hp-chip--tr { right: -1.6rem; }
+  .hp-chip--bl { left: -2.4rem; }
+}
+@media (max-width: 380px) {
+  .hp-chip { font-size: 0.74rem; padding-right: 0.7rem; }
+  .hp-chip--tr { right: -0.2rem; }
+  .hp-chip--bl { left: -0.2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob, .hp-float, .hp-chip, .hp-glow::before, .hero-cue-mouse::after { animation: none; }
+  .hero-cue-mouse::after { opacity: 1; }
+}

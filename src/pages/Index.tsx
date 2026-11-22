@@ -1,8 +1,10 @@
 import { useTheme } from "@/hooks/useTheme";
-import { usePageMeta } from "@/hooks/usePageMeta";
+import { usePageMeta, HOME_META } from "@/hooks/usePageMeta";
 import Navbar from "@/components/portfolio/Navbar";
 import Hero from "@/components/portfolio/Hero";
+import About from "@/components/portfolio/About";
 import Skills from "@/components/portfolio/Skills";
+import Toolkit from "@/components/portfolio/Toolkit";
 import Projects from "@/components/portfolio/Projects";
 import Experience from "@/components/portfolio/Experience";
 import Education from "@/components/portfolio/Education";
@@ -10,11 +12,10 @@ import Certificates from "@/components/portfolio/Certificates";
 import Contact from "@/components/portfolio/Contact";
 import Footer from "@/components/portfolio/Footer";
 
-const HOME_TITLE = "Muhammad Zaigham Asif — Software Engineer & Full-Stack Developer";
 
 const Index = () => {
   const { theme, toggle } = useTheme();
-  usePageMeta({ title: HOME_TITLE });
+  usePageMeta(HOME_META);
 
   return (
     <div style={{ backgroundColor: "var(--bg-primary)", minHeight: "100vh" }}>
@@ -24,7 +25,9 @@ const Index = () => {
       <Navbar theme={theme} onToggle={toggle} />
       <main id="main-content" tabIndex={-1} style={{ outline: "none" }}>
         <Hero />
+        <About />
         <Skills />
+        <Toolkit />
         <Projects />
         <Experience />
         <Education />

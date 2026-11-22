@@ -3,58 +3,94 @@
 
 <head>
   <meta charset="UTF-8" />
-
-  <!-- Favicon -->
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Primary SEO -->
-  <title>Muhammad Zaigham Asif — Software Engineer & Full-Stack Developer</title>
-
+  <title>Muhammad Zaigham Asif | Full-Stack &amp; AI Software Engineer</title>
   <meta
     name="description"
-    content="Muhammad Zaigham Asif is a Software Engineer from Lahore, Pakistan specializing in React, Node.js, AI/ML, and full-stack development. Founder of Advance Soft Logics. View projects, skills, and experience."
+    content="Muhammad Zaigham Asif is a Lahore-based Software Engineer building full-stack web apps with React and Node.js, plus AI/NLP projects. See his work and resume."
   />
-
   <meta name="author" content="Muhammad Zaigham Asif" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="googlebot" content="index, follow" />
-
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <link rel="canonical" href="https://muhammadzaighamasif.vercel.app/" />
 
-  <meta name="geo.region" content="PK" />
+  <meta name="geo.region" content="PK-PB" />
   <meta name="geo.placename" content="Lahore, Pakistan" />
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Browser UI colors (match the design tokens in src/index.css) -->
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0a0c12" media="(prefers-color-scheme: dark)" />
   <meta name="color-scheme" content="light dark" />
 
+  <!-- Icons / PWA manifest -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
   <!-- Open Graph -->
-  <meta property="og:type" content="profile" />
-  <meta property="og:title" content="Muhammad Zaigham Asif | Software Engineer & Full-Stack Developer" />
-  <meta property="og:description" content="Portfolio of Muhammad Zaigham Asif — Software Engineer, Full-Stack Developer, and AI/ML developer based in Lahore, Pakistan." />
-  <meta property="og:url" content="https://muhammadzaighamasif.vercel.app/" />
+  <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Muhammad Zaigham Asif" />
-  <meta property="og:image" content="https://muhammadzaighamasif.vercel.app/preview.png" />
-  <meta property="og:image:width" content="1890" />
-  <meta property="og:image:height" content="867" />
-  <meta property="og:image:alt" content="Muhammad Zaigham Asif - Software Engineer" />
   <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://muhammadzaighamasif.vercel.app/" />
+  <meta property="og:title" content="Muhammad Zaigham Asif | Full-Stack &amp; AI Software Engineer" />
+  <meta
+    property="og:description"
+    content="Muhammad Zaigham Asif is a Lahore-based Software Engineer building full-stack web apps with React and Node.js, plus AI/NLP projects. See his work and resume."
+  />
+  <meta property="og:image" content="https://muhammadzaighamasif.vercel.app/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Muhammad Zaigham Asif, Software Engineer (Full-Stack and AI), with his portrait" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Muhammad Zaigham Asif | Software Engineer & Full-Stack Developer" />
-  <meta name="twitter:description" content="Portfolio of Muhammad Zaigham Asif — Software Engineer, Full-Stack Developer, and AI/ML developer." />
-  <meta name="twitter:image" content="https://muhammadzaighamasif.vercel.app/preview.png" />
-  <meta name="twitter:image:alt" content="Muhammad Zaigham Asif - Software Engineer" />
+  <meta name="twitter:title" content="Muhammad Zaigham Asif | Full-Stack &amp; AI Software Engineer" />
+  <meta
+    name="twitter:description"
+    content="Muhammad Zaigham Asif is a Lahore-based Software Engineer building full-stack web apps with React and Node.js, plus AI/NLP projects. See his work and resume."
+  />
+  <meta name="twitter:image" content="https://muhammadzaighamasif.vercel.app/og-image.jpg" />
+  <meta name="twitter:image:alt" content="Muhammad Zaigham Asif, Software Engineer (Full-Stack and AI), with his portrait" />
 
-  <!-- Fonts (only the weights the site uses) -->
+  <!-- Performance: the hero portrait is the LCP element on the home page. Preloaded with the same
+       srcset/sizes the <picture> uses; added only on "/" so /projects and 404s don't fetch it unused. -->
+  <script>
+    if (location.pathname === "/") {
+      var preload = document.createElement("link");
+      preload.rel = "preload";
+      preload.as = "image";
+      preload.type = "image/webp";
+      preload.href = "/profile.webp";
+      preload.setAttribute("imagesrcset", "/profile-sm.webp 420w, /profile.webp 700w");
+      preload.setAttribute("imagesizes", "(min-width: 1024px) 416px, 80vw");
+      preload.setAttribute("fetchpriority", "high");
+      document.head.appendChild(preload);
+    }
+  </script>
+
+  <!-- Fonts: preconnect, then load the stylesheet without blocking first paint (display=swap) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    rel="stylesheet"
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
   />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
+  </noscript>
 
   <!-- Apply the saved/system theme before first paint to avoid a flash of the wrong theme -->
   <script>
@@ -71,58 +107,108 @@
     })();
   </script>
   <style>
-    html { background: #ffffff; }
-    html[data-theme="dark"] { background: #000000; }
+    html { background: #fbfbfd; }
+    html[data-theme="dark"] { background: #0a0c12; }
   </style>
 
-  <!-- Structured Data: Person -->
+  <!-- Structured data: one @graph (Person + WebSite + ProfilePage). /projects adds its own nodes at runtime. -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "@id": "https://muhammadzaighamasif.vercel.app/#person",
-      "name": "Muhammad Zaigham Asif",
-      "alternateName": ["Zaigham Asif", "Muhammad Zaigham", "Zaigham"],
-      "url": "https://muhammadzaighamasif.vercel.app/",
-      "jobTitle": "Software Engineer",
-      "description": "Muhammad Zaigham Asif is a Software Engineer and Full-Stack Developer specializing in React, Node.js, AI/ML, and full-stack web development.",
-      "alumniOf": {
-        "@type": "CollegeOrUniversity",
-        "name": "FAST-NUCES, Lahore"
-      },
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Advance Soft Logics"
-      },
-      "knowsAbout": [
-        "Software Engineering", "Full-Stack Web Development", "React",
-        "Node.js", "JavaScript", "TypeScript", "Artificial Intelligence",
-        "Machine Learning", "REST APIs"
-      ],
-      "sameAs": [
-        "https://github.com/MuhammadZaighamAsif",
-        "https://linkedin.com/in/zaigham-asif-5a5499240"
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://muhammadzaighamasif.vercel.app/#person",
+          "name": "Muhammad Zaigham Asif",
+          "alternateName": ["Zaigham Asif", "Muhammad Zaigham", "Zaigham"],
+          "url": "https://muhammadzaighamasif.vercel.app/",
+          "image": {
+            "@type": "ImageObject",
+            "@id": "https://muhammadzaighamasif.vercel.app/#portrait",
+            "url": "https://muhammadzaighamasif.vercel.app/profile.jpg",
+            "contentUrl": "https://muhammadzaighamasif.vercel.app/profile.jpg",
+            "width": 700,
+            "height": 875,
+            "caption": "Portrait of Muhammad Zaigham Asif"
+          },
+          "email": "mailto:zaighamasif06@gmail.com",
+          "jobTitle": "Software Engineer",
+          "description": "Muhammad Zaigham Asif is a Software Engineer from Lahore, Pakistan, building full-stack web applications with React and Node.js and AI/NLP projects with Python.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lahore",
+            "addressCountry": "PK"
+          },
+          "alumniOf": {
+            "@type": "CollegeOrUniversity",
+            "name": "FAST-NUCES, Lahore"
+          },
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Advance Soft Logics"
+          },
+          "knowsAbout": [
+            "Software Engineering",
+            "Full-Stack Web Development",
+            "React",
+            "Node.js",
+            "Express.js",
+            "MongoDB",
+            "JavaScript",
+            "Python",
+            "Flask",
+            "Natural Language Processing",
+            "Machine Learning",
+            "PostgreSQL",
+            "REST APIs"
+          ],
+          "sameAs": [
+            "https://github.com/MuhammadZaighamAsif",
+            "https://linkedin.com/in/zaigham-asif-5a5499240"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://muhammadzaighamasif.vercel.app/#website",
+          "name": "Muhammad Zaigham Asif",
+          "url": "https://muhammadzaighamasif.vercel.app/",
+          "description": "Portfolio of Muhammad Zaigham Asif, Software Engineer and Full-Stack Developer.",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://muhammadzaighamasif.vercel.app/#person" }
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://muhammadzaighamasif.vercel.app/#profilepage",
+          "url": "https://muhammadzaighamasif.vercel.app/",
+          "name": "Muhammad Zaigham Asif | Full-Stack & AI Software Engineer",
+          "inLanguage": "en",
+          "dateModified": "2026-11-22",
+          "isPartOf": { "@id": "https://muhammadzaighamasif.vercel.app/#website" },
+          "primaryImageOfPage": { "@id": "https://muhammadzaighamasif.vercel.app/#portrait" },
+          "mainEntity": { "@id": "https://muhammadzaighamasif.vercel.app/#person" }
+        }
       ]
-    }
-  </script>
-
-  <!-- Structured Data: WebSite -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": "https://muhammadzaighamasif.vercel.app/#website",
-      "name": "Muhammad Zaigham Asif",
-      "url": "https://muhammadzaighamasif.vercel.app/",
-      "description": "Official portfolio of Muhammad Zaigham Asif, Software Engineer and Full-Stack Developer.",
-      "publisher": { "@id": "https://muhammadzaighamasif.vercel.app/#person" }
     }
   </script>
 </head>
 
 <body>
   <noscript>
-    This portfolio needs JavaScript to run. Contact: zaighamasif06@gmail.com
+    <main style="max-width: 40rem; margin: 3rem auto; padding: 0 1.25rem; font-family: system-ui, sans-serif; line-height: 1.6; color: #0b1020;">
+      <h1>Muhammad Zaigham Asif &mdash; Software Engineer</h1>
+      <p>
+        Software Engineering student at FAST-NUCES Lahore, based in Lahore, Pakistan. I build full-stack web
+        applications with React, Node.js, Express and MongoDB, and AI/NLP projects with Python, Flask, FAISS and BERT.
+        This portfolio needs JavaScript to display its interactive content.
+      </p>
+      <ul>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/resume.pdf">R&eacute;sum&eacute; (PDF)</a></li>
+        <li><a href="https://github.com/MuhammadZaighamAsif" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="https://linkedin.com/in/zaigham-asif-5a5499240" rel="noopener noreferrer">LinkedIn</a></li>
+        <li>Email: <a href="mailto:zaighamasif06@gmail.com">zaighamasif06@gmail.com</a></li>
+      </ul>
+    </main>
   </noscript>
   <div id="root"></div>
   <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
