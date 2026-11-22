@@ -1,5 +1,5 @@
 import { useMemo, useRef, type CSSProperties } from "react";
-import { Code2, Server, BrainCircuit, LayoutGrid, Database, Wrench, type LucideIcon } from "lucide-react";
+import { Bot, Cloud, Code2, Server, BrainCircuit, LayoutGrid, Database, Wrench, type LucideIcon } from "lucide-react";
 import { skills } from "@/data/portfolio";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { useGsap } from "@/lib/animations";
@@ -13,6 +13,8 @@ const categoryIcons: Record<string, LucideIcon> = {
   Frontend: LayoutGrid,
   Databases: Database,
   Tools: Wrench,
+  "DevOps & Cloud": Cloud,
+  "Agentic AI": Bot,
 };
 
 /** Seconds per item for the marquee, so every row drifts at the same slow speed. */

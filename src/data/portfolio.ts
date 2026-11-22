@@ -224,7 +224,7 @@ export const tools: ToolItem[] = [
   // Agentic AI
   { name: "LangChain", category: "Agentic AI", use: "Chains, tools and retrieval for LLM apps.", hue: "#1C7C54", featured: true },
   { name: "LangGraph", category: "Agentic AI", use: "Stateful, multi-step agent workflows as graphs.", hue: "#1C7C54", fallback: "agents", featured: true },
-  { name: "CrewAI", category: "Agentic AI", use: "Role-based multi-agent collaboration.", hue: "#FF5A50" },
+  { name: "CrewAI", category: "Agentic AI", use: "Role-based multi-agent collaboration.", hue: "#FF5A50", fallback: "agents" },
   { name: "AutoGen", category: "Agentic AI", use: "Conversational multi-agent frameworks.", hue: "#0078D4", fallback: "agents" },
   { name: "LlamaIndex", category: "Agentic AI", use: "Data connectors and retrieval pipelines.", hue: "#8E5CF5" },
   { name: "Model Context Protocol", category: "Agentic AI", use: "Standard way to give agents tools and context.", hue: "#D97757", fallback: "mcp", featured: true },
@@ -328,7 +328,7 @@ export const agentic: {
   frameworks: [
     { name: "LangChain" },
     { name: "LangGraph", fallback: "agents" },
-    { name: "CrewAI" },
+    { name: "CrewAI", fallback: "agents" },
     { name: "AutoGen", fallback: "agents" },
     { name: "LlamaIndex" },
     { name: "n8n" },
